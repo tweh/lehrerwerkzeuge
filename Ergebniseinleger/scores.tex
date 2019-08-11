@@ -1,0 +1,361 @@
+%!TeX program = xelatex
+\documentclass[11pt,ngerman]{scrartcl}
+
+% Basispakete
+\usepackage{xparse,csvsimple}
+\usepackage{amsmath,amssymb}
+\usepackage{babel}
+
+% Schrift
+\usepackage{fontspec}
+   \setmainfont{Skolar Sans Latin}
+\usepackage{microtype}
+
+% Zeichenpaket und globale Stile
+\usepackage{tikz}
+   \usetikzlibrary{calc}
+   \tikzset{
+      every node/.style = {
+%         draw = gray, thin,
+         inner xsep = 0pt,
+         inner ysep = 2pt,
+         outer sep = 0pt,
+         anchor = north west,
+      },
+      margins/.style = {
+%         draw, magenta, thin,
+      },
+   }
+   % TODO: TikZ-Stile für den Rest anlegen
+
+% Paket für Zahlen und Einheiten
+\usepackage{siunitx}
+\sisetup{
+   locale=DE,
+   detect-all,
+}
+
+% Tabellenpakete
+\usepackage{array,booktabs,tabu,multirow}
+\setlength{\tabcolsep}{4.6pt}
+
+% Layout
+\usepackage{geometry}
+   \geometry{
+      vmargin = 0mm,
+      hmargin = 0mm,
+   }
+\setlength{\parindent}{0pt}
+
+% alte Titelmakros löschen
+\let\date\relax
+\let\author\relax
+\let\title\relax
+
+% ==============================================================================
+% IMPLEMENTIERUNG
+\ExplSyntaxOn\makeatletter
+
+% VARIABLEN
+%% Stufe
+\bool_new:N \l_scores_level_is_sek_i_bool
+    \bool_set_true:N \l_scores_level_is_sek_i_bool
+%% Layout
+\dim_const:Nn \c_scores_vmargin_dim {8mm}
+\dim_const:Nn \c_scores_hmargin_dim {15mm}
+%% Titeldaten u.ä.
+\tl_new:N \l_scores_title_tl
+\tl_new:N \l_scores_date_of_test_tl
+\tl_new:N \l_scores_date_of_signature_tl
+%% Kennzahlen
+\tl_new:N \l_scores_avg_score_tl
+\tl_new:N \l_scores_max_total_points_tl
+\tl_new:N \l_scores_avg_total_points_tl
+\tl_new:N \l_scores_num_total_full_points_tl
+\tl_new:N \l_scores_percent_column_tl
+%% Aufgaben und Punktzahlen
+\prop_new:N \l_scores_tasks_titles_prop
+\prop_new:N \l_scores_tasks_max_points_prop
+\prop_new:N \l_scores_tasks_avg_points_prop
+\prop_new:N \l_scores_tasks_num_full_points_prop
+\int_new:N \l_scores_tasks_count_int
+%% Noten
+\seq_new:N \l_scores_scores_numbers_seq
+\prop_new:N \l_scores_scores_names_prop
+\prop_new:N \l_scores_scores_percents_prop
+\prop_new:N \l_scores_scores_points_prop
+\prop_new:N \l_scores_scores_counts_prop
+\int_new:N \l_scores_scores_count_int
+
+% BEFEHLE FÜR TITELDATEN
+\NewDocumentCommand { \title } { m } {
+   \tl_set:Nn \l_scores_title_tl { #1 }
+}
+\NewDocumentCommand { \dateoftest } { m } {
+   \tl_set:Nn \l_scores_date_of_test_tl { #1 }
+}
+\NewDocumentCommand { \dateofsignature } { m } {
+   \tl_set:Nn \l_scores_date_of_signature_tl { #1 }
+}
+% #1 = sek1|sek2
+\NewDocumentCommand { \level } { m } {
+   \tl_if_eq:nnTF { sek1 } { #1 } {
+      \bool_set_true:N \l_scores_level_is_sek_i_bool
+   } {
+      \tl_if_eq:nnTF { sek2 } { #1 } {
+         \bool_set_false:N \l_scores_level_is_sek_i_bool
+      } { \ERROR }
+   }
+}
+
+% BEFEHL, UM PROZENTZEICHEN ZU ENTFERNEN
+\cs_new:Nn \scores_strip_percent_and_use:n {
+   \tl_set:Nx \l_tmpa_tl { #1 }
+   \regex_replace_once:nnN {   \% \Z } { } \l_tmpa_tl
+   \tl_use:N \l_tmpa_tl    % ^-- no-break space!
+}
+
+% BEFHELSVARIANTEN
+\prg_generate_conditional_variant:Nnn \str_if_eq:nn { xn } { T, F, TF }
+\cs_generate_variant:Nn \prop_item:Nn { Nx }
+\cs_generate_variant:Nn \prop_get:NnN { NxN }
+
+% BEFEHL FÜR STUFENVARIANTEN
+\cs_new:Nn \scores_level_dependent:nn {
+   \bool_if:NTF \l_scores_level_is_sek_i_bool { #1 } { #2 }
+}
+
+% BEFEHL ZUR AUSGABE DER EINLEGEBLÄTTER
+\NewDocumentCommand { \createscores } { } {
+   % KENNZAHLEN EINLESEN
+   \csvreader[
+      respect~percent,
+      respect~sharp,
+      separator = semicolon,
+      head~to~column~names,
+   ] { csv/Export-Kennzahlen.csv } { } {
+      \tl_set:Nx \l_scores_avg_score_tl { \DurchschnittNote }
+      \tl_set:Nx \l_scores_max_total_points_tl { \maxGesPunkte }
+      \tl_set:Nx \l_scores_avg_total_points_tl { \DurchschnittPunkte }
+      \tl_set:Nx \l_scores_num_total_full_points_tl { \AnzVolleGesPunktzahl }
+      \tl_set:Nx \l_scores_percent_column_tl { \ProzentSpalte }
+   }
+   % AUFGABENTABELLE EINLESEN
+   \csvreader[
+      respect~percent,
+      respect~sharp,
+      separator = semicolon,
+      head~to~column~names,
+      filter~not~strcmp = { \Bezeichnung } { },
+   ] { csv/Export-Aufgaben.csv } { } {
+      \prop_put:Nxx \l_scores_tasks_titles_prop { \lfdNr } { \Bezeichnung }
+      \prop_put:Nxx \l_scores_tasks_max_points_prop { \lfdNr } { \maxPunkte }
+      \prop_put:Nxx \l_scores_tasks_avg_points_prop { \lfdNr } { \durchschnPunkte }
+      \prop_put:Nxx \l_scores_tasks_num_full_points_prop { \lfdNr } { \AnzVollePunktzahl }
+   }
+   % AUFGABENANZAHL ERMITTELN
+   \int_set:Nn \l_scores_tasks_count_int { \prop_count:N \l_scores_tasks_titles_prop }
+   % NOTENGRENZENTABELLE EINLESEN
+   \csvreader[
+      respect~percent,
+      respect~sharp,
+      separator = semicolon,
+      head~to~column~names,
+      filter~not~strcmp = { \Ziffer } { },
+   ] { csv/Export-Noten.csv } { } {
+      \seq_put_right:Nx \l_scores_scores_numbers_seq { \Ziffer }
+      \prop_put:Nxx \l_scores_scores_names_prop { \Ziffer } { \Name }
+      \prop_put:Nxx \l_scores_scores_percents_prop { \Ziffer } { \abProzent }
+      \prop_put:Nxx \l_scores_scores_points_prop { \Ziffer } { \abPunkte }
+      \prop_put:Nxx \l_scores_scores_counts_prop { \Ziffer } { \Anzahl }
+   }
+   % NOTENANZAHL ERMITTELN
+   \int_set:Nn \l_scores_scores_count_int { \seq_count:N \l_scores_scores_numbers_seq }
+   % EINLEGER AUSGEBEN
+   \csvreader[
+      respect~percent,
+      respect~sharp,
+      separator=semicolon,
+      head~to~column~names,
+      filter~expr = {
+         test { \ifcsvnotstrcmp { \Name } { } }
+         and
+         not (
+            test { \ifcsvstrcmp { \Hinweis } { Nachschreiber } }
+            or
+            test { \ifcsvstrcmp { \Hinweis } { diff } }
+            or
+            test { \ifcsvstrcmp { \Hinweis } { non-diff } }
+         )
+      },
+   ] { csv/Ergebnisse-Notenliste.csv } { \l_scores_percent_column_tl = \Prozent } {
+      \begin{tikzpicture}
+         % RAHMEN
+         \path [margins] (0,0) coordinate (OL) rectangle ++(\textwidth,-98.4mm) coordinate (UR);
+         \path [margins] ($(OL)+(\c_scores_hmargin_dim,-\c_scores_vmargin_dim)$) coordinate (OLm)
+            rectangle
+            ($(UR)+(-\c_scores_hmargin_dim,\c_scores_vmargin_dim)$) coordinate (URm);
+         % TITEL UND NAME
+         \node (title) at (OLm) [
+            font = \Large\bfseries,
+            text~width = \textwidth - 2\c_scores_hmargin_dim,
+         ] {
+            \tl_use:N \l_scores_title_tl
+            \c_space_tl -- \c_space_tl
+            \tl_use:N \l_scores_date_of_test_tl
+            \hfill
+            \mdseries
+            \Vorname \c_space_tl \Name
+         };
+         % NOTE
+         \node (grade) at ($(title.south~west)+(0,-2.5mm)$) [
+            draw = black,
+            line~width = 1pt,
+            fill = black!15,
+            font = \Huge \bfseries,
+            minimum~size = 15mm,
+            rounded~corners = 1mm,
+         ] {
+            \scores_level_dependent:nn
+               { \Note }
+               { \Punktzahl }
+         };
+         % NOTE in Worten, PORZENTZAHL, KORREKTURDATUM
+         \node (percent) at ($(grade.north~east)+(2mm,1.25mm)$) [
+            anchor = north~west,
+            align = left,
+         ] {
+            \strut
+            \textbf { \prop_item:Nx \l_scores_scores_names_prop { \scores_level_dependent:nn { \Note } { \Punktzahl } } }
+            \\[-0.75mm]
+            { \footnotesize \scores_strip_percent_and_use:n { \Prozent } \, \% }
+            \\[2.5mm]
+            \l_scores_date_of_signature_tl
+         };
+         \coordinate (comment-start) at ($(percent.north~east)+(6mm,0)$);
+         % KOMMENTAR
+         \path let \p1=(comment-start), \p2=(URm) in
+            node [
+               text~width = \x2-\x1,
+               font = \itshape,
+               align = left,
+               anchor = north~west,
+            ] at (comment-start) {
+               \strut \Kommentar
+            };
+         % PUNKTETABELLE
+         \node (punktetabelle) at ($(grade.south~west)-(0,6.5mm)$)
+            [
+               align = left,
+               font = \footnotesize
+            ] {
+            \sisetup {
+               round-integer-to-decimal,
+               add-decimal-zero,
+               round-precision = 2,
+               round-mode = places,
+            }
+            \begin { tabu } { l | *{\l_scores_tasks_count_int}{c} | c }
+               \toprule
+               Aufg. &
+                  \int_step_inline:nnn { 1 } { \l_scores_tasks_count_int } {
+                     \prop_item:Nn \l_scores_tasks_titles_prop { ####1 } &
+                  }
+                  Summe \\
+               \rowfont { \bfseries } \scores_level_dependent:nn { du } { Sie } &
+                  \int_step_inline:nnn { 1 } { \l_scores_tasks_count_int } {
+                     \num { \use:c { csvcol \int_to_roman:n { ####1 + 4 } } } &
+                  }
+                  \num { \Gesamt } \\
+               max. &
+                  \int_step_inline:nnn { 1 } { \l_scores_tasks_count_int } {
+                     \num { \prop_item:Nn \l_scores_tasks_max_points_prop { ####1 } } &
+                  }
+                  \num { \l_scores_max_total_points_tl } \\
+               $\varnothing$ &
+                  \int_step_inline:nnn { 1 } { \l_scores_tasks_count_int } {
+                     \prop_item:Nn \l_scores_tasks_avg_points_prop { ####1 } &
+                  }
+                  \num { \l_scores_avg_total_points_tl } \\
+               \scores_level_dependent:nn { AvPZ } { AvBE } &
+                  \int_step_inline:nnn { 1 } { \l_scores_tasks_count_int } {
+                     \prop_item:Nn \l_scores_tasks_num_full_points_prop { ####1 } &
+                  }
+                  \tl_use:N \l_scores_num_total_full_points_tl \\
+               \bottomrule
+            \end { tabu }
+         } ;
+         \node at ($(punktetabelle.north~west)+(0,1mm)$) [
+            anchor = base~west,
+            align = left,
+            font = \footnotesize \bfseries
+         ] { \scores_level_dependent:nn { Punkteverteilung } { Verteilung~der~BE } };
+         % NOTENÜBERSICHT
+         \node (notentabelle) at ($(punktetabelle.south~west)-(0,6mm)$) [
+            align = left,
+            font = \footnotesize,
+         ] {
+            \sisetup {
+               round-integer-to-decimal,
+               add-decimal-zero,
+               round-precision = 2,
+               round-mode = places,
+            }
+            \begin{ tabu } { l @{ \c_space_tl } l | *{\l_scores_scores_count_int}{c} }
+               \toprule
+               \multicolumn { 2 } { l | } { \scores_level_dependent:nn { Note } { Punkte } }
+                  \int_step_inline:nnn { 1 } { \l_scores_scores_count_int } {
+                    & \seq_item:Nn \l_scores_scores_numbers_seq { ####1 }
+                  }
+                  \\
+               \multirow {2} {*} {ab}
+                  & Pkt.
+                  \int_step_inline:nnn { 1 } { \l_scores_scores_count_int } {
+                    & \prop_get:NxN \l_scores_scores_points_prop
+                         { \seq_item:Nn \l_scores_scores_numbers_seq { ####1 } } \l_tmpa_tl
+                      \num { \l_tmpa_tl }
+                  }
+                  \\[-0.6ex]
+               \rowfont { \tiny }
+                  & \%
+                  \int_step_inline:nnn { 1 } { \l_scores_scores_count_int } {
+                    & \prop_get:NxN \l_scores_scores_percents_prop
+                         { \seq_item:Nn \l_scores_scores_numbers_seq { ####1 } } \l_tmpa_tl
+                      \scores_strip_percent_and_use:n { \l_tmpa_tl }
+                  }
+                  \\
+               \multicolumn { 2 } { l | } { Anzahl }
+                  \int_step_inline:nnn { 1 } { \l_scores_scores_count_int } {
+                    & \prop_item:Nx \l_scores_scores_counts_prop
+                         { \seq_item:Nn \l_scores_scores_numbers_seq { ####1 } }
+                  }
+                  \\
+               \midrule
+               \multicolumn { \l_scores_scores_count_int } { l } {
+                  \scores_level_dependent:nn { Durchschnittsnote } { Durchschnittspunktzahl }
+                  :~\tl_use:N \l_scores_avg_score_tl
+               } \\
+               \bottomrule
+            \end{ tabu }
+         };
+         \node at ($(notentabelle.north~west)+(0,1mm)$) [
+            anchor = base~west,
+            align = left,
+            font = \footnotesize \bfseries
+         ] { \scores_level_dependent:nn { Notenübersicht } { Punkteübersicht } };
+      \end{tikzpicture}
+      \par
+   }
+}
+
+\makeatother\ExplSyntaxOff
+% ==============================================================================
+
+\begin{document}
+\title{Physikklausur 12ph1 (Weh)}#
+\dateoftest{15. Mai 2019}#
+\dateofsignature{26. Mai 2019}#
+\level{sek2}#
+
+\createscores
+\end{document}
