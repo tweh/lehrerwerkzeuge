@@ -31,12 +31,12 @@ Numberstabelle zur Erzeugung von (Roh-)Datumslisten zur Planung von Unterricht z
 ## Systemvorraussetzungen
 Da ich ausschließlich mit **macOS** arbeite, funktionieren die meisten Werkzeuge auch nur unter diesem Betriebssystem und erfordern in der Regel weitere Programme o.ä.:
 
-| Werkzeug               | Voraussetzung                 |
-|------------------------|-------------------------------|
-| Ergebniseinleger       | vollständige TeX-Distribution |
-| prepare_classes        | —                             |
-| sek1_arbeit, …         | Apple Numbers                 |
-| Stundenlistengenerator | Apple Numbers                 |
+| Werkzeug               | Voraussetzung                                             |
+|------------------------|-----------------------------------------------------------|
+| Ergebniseinleger       | vollständige TeX-Distribution, CSV-Daten aus Notentabelle |
+| prepare_classes        | Apple Numbers, Notentabellen                              |
+| sek1_arbeit, …         | Apple Numbers                                             |
+| Stundenlistengenerator | Apple Numbers                                             |
 
 ## Anleitungen
 
