@@ -239,6 +239,23 @@ while true; do
         	mkdir "classes/lists/$class"
         	 
         	title="$class · $semestername"
+        	
+        	echo "   - Lege Klassen-/Kursliste mit Überschrift „${class}“ an."
+        	cp "liste.numbers" "classes/lists/$class/Liste $class.numbers"
+        	# Pfad speichern
+        	currentfile="$(getfullname "classes/lists/$class/Liste $class.numbers")"
+			# Tabellentitel per Apple Script setzen
+			osascript <<EOF
+				tell application "Numbers"
+					open POSIX file "$currentfile"
+					tell table 1 of sheet "Liste" of document 1
+						set the name to "$class"
+					end tell
+					save document 1
+					close document 1
+				end tell
+EOF
+        	
         	echo "   - Lege ${testnames[$level-1]}-Datei mit Überschrift „${title}“ an."
         	cp "sek${level}_arbeit.numbers" "classes/lists/$class/${testnames[$level-1]} $class.numbers"
         	# Pfad speichern
@@ -254,7 +271,6 @@ while true; do
 					close document 1
 				end tell
 EOF
-        	title="$class · $semestername"
         	echo "   - Lege ${participationnames[$level-1]}-Datei mit Überschrift „${title}“ an."
         	cp "sek${level}_sma.numbers" "classes/lists/$class/${participationnames[$level-1]} $class.numbers"
         	# Pfad speichern
@@ -270,7 +286,6 @@ EOF
 					close document 1
 				end tell
 EOF
-        	title="$class · $year"
         	echo "   - Lege ${finalgradesnames[$level-1]}-Datei mit Überschrift „${title}“ an."
         	cp "sek${level}_endnoten.numbers" "classes/lists/$class/${finalgradesnames[$level-1]} $class.numbers"
         	# Pfad speichern

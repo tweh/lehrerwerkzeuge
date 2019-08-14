@@ -6,7 +6,7 @@ Nun wird auf der gleichen Dateiebene, auf der das Script liegt, der Ordner `clas
 
 - `notes/` wird später mit zwei Markdowndateien für die grobe Themenplanung und die Übersicht der Stunden gefüllt.
 - `folders/` erhält später für jede Klasse einen leeren Unterordner.
-- `lists/` erhält die Noten- und Bewertungslisten aus den Lehrerwerkzeugen.
+- `lists/` erhält die Namensliste und Bewertungstabellen aus den Lehrerwerkzeugen.
 
 Es folgt dann zunächst eine Abfrage folgender allegemeiner Angaben, die jeweils mit [Enter] bestätigt werden müssen:
 
