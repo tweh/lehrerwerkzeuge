@@ -15,7 +15,12 @@ Es folgt dann zunächst eine Abfrage folgender allegemeiner Angaben, die jeweils
 - Halbjahr (kann nur bei Beenden und erneutem Aufrufen des Scripts geändert werden)
 - Halbjahresbezeichnung (kann nur bei Beenden und erneutem Aufrufen des Scripts geändert werden)
 - Skundarstufe (kann später geändert werden)
+- Lang- oder Kurzfach (kann später geändert werden). Diese Einstellung bezieht sich ausschließlich auf die Endnotentabelle, die in drei Varianten (s. Anleitung dort) vorliegt und hier dann passend gewählt werden kann.
 
-Beim Scriptstart wurden bereits einige Ordner angelegt (s.o.), die in der folgenden Abfrage von Klassen/Kursen mit den entsprechenden Vorlagen gefüllt werden. Dabei muss nun jeweils ein Klassen-/Kursname eingeben und mit [Enter] bestätigt werden. Dabei werden die Numbers-Dateien kurz geöffnet, um den eine Überschift der Form *Klassen-/Kursnamen · Halbjahresbezeichnung* einzutragen, und wieder geschlossen. Gibt man anstelle eines Namens `-L` ein, kann die Wahl der Sekundarstufe geändert werden. Mit der Eingabe von `-Q` wird das Script beendet.
+Beim Scriptstart wurden bereits einige Ordner angelegt (s.o.), die in der folgenden Abfrage von Klassen/Kursen mit den entsprechenden Vorlagen gefüllt werden. Dabei muss nun jeweils ein Klassen-/Kursname eingeben und mit [Enter] bestätigt werden. Dabei werden die Numbers-Dateien kurz geöffnet, um den eine Überschift der Form *Klassen-/Kursnamen · Halbjahresbezeichnung* einzutragen, und wieder geschlossen. Anstelle des Namens kann auch eine der folgenden Optionen eingeben werden:
+
+- `-F`: Zwischen Lang- und Kurzfach wechseln.
+- `-L`: Wahl der Sekundarstufe ändern.
+- `-Q`: Script beenden.
 
 Nach dem Beenden des Scripts können die gernereiert Dateien und Ordner an eine passende Stelle in Ihrem Dateisystem bewegt werden. Die Notizlisten (aus dem Ordner `notes/`) importiere ich in das Markdown-Notizprogramm [Bear](https://bear.app), wo sie nach den vom Script bereits vergebenen Tags sortiert werden.

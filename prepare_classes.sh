@@ -17,6 +17,11 @@ error_forbiddensymbol="\033[0;31mFehler: Verbotenes Symbol „${forbiddensymbols
 n=0
 # Sekundarstufe
 level=1
+# Fachvariante und Blattauswahl
+longshort=kf
+selectsheet="Zeugnisnoten (Kurzfach)"
+deletesheetI="Zeugnisnoten (Langfach A)"
+deletesheetII="Zeugnisnoten (Langfach B)"
 # Bezeichner (als Arrays für Sek 1 und Sek 2)
 testnames=("KA" "Klausur")
 participationnames=("sMA" "sMA")
@@ -50,6 +55,36 @@ done
 
 # ----------------------------------------------------------------------------------------
 # Funktion zum Abfragen der Sekundarstufe
+# ----------------------------------------------------------------------------------------
+
+function getlongshort {
+	while true; do
+   read -p "Lang oder Kurzfach?: [KF, LFA, LFB] " levelinput
+   case $levelinput in
+      KF|kf )
+         longshort=kf
+         echo "Kurzfach ausgewählt."
+         break
+         ;;
+      LFA|lfa|LF|lf )
+         longshort=lfa
+         echo "Langfach (Variante A) gewählt."
+         break
+         ;;
+      LFB|lfb )
+         longshort=lfb
+         echo "Langfach (Variante B) gewählt."
+         break
+         ;;
+      * )
+         echo $error_invalidinput
+    esac
+done
+}
+
+
+# ----------------------------------------------------------------------------------------
+# Funktion zum Abfragen des Dateinamens
 # siehe https://stackoverflow.com/q/3915040/1018250
 # ----------------------------------------------------------------------------------------
 
@@ -206,21 +241,34 @@ echo $thickrule
 
 
 # ----------------------------------------------------------------------------------------
+# Fachvariante abfragen
+# ----------------------------------------------------------------------------------------
+
+echo "\033[1;34mHINWEIS: \033[0;34mDie folgende Einstellung kann später noch geändert werden.\033[0m"
+getlongshort
+echo $thickrule
+
+
+# ----------------------------------------------------------------------------------------
 # Klassen abfragen
 # ----------------------------------------------------------------------------------------
 
 echo "Es folgt die Abfrage der Klassen."
-echo "   „-Q“ eingeben, um das Programm zu beenden"
-echo "   „-L“ eingeben, um die Sekundarstufe zu ändern"
+echo "   „-F“ eingeben, um zwischen Lang- und Kurzfach zu wechseln."
+echo "   „-L“ eingeben, um die Sekundarstufe zu ändern."
+echo "   „-Q“ eingeben, um das Script zu beenden."
 while true; do
 	echo $thinrule
-   read -p "Klasse/Kurs eingeben (oder „-L“ bzw. „-Q“): " class
+   read -p "Klasse/Kurs eingeben (oder „-F“ „-L“ „-Q“): " class
    case $class in
       -[Qq]* )
          break
          ;;
       -[Ll]* )
       	getlevel
+      	;;
+      -[Ff]* )
+      	getlongshort
       	;;
       $forbiddensymbolcase )
       	echo $error_forbiddensymbol
@@ -238,9 +286,7 @@ while true; do
         	echo "   - Erstelle Notenlistenordner für „${class}“."
         	mkdir "classes/lists/$class"
         	 
-        	title="$class · $semestername"
-        	
-        	echo "   - Lege Klassen-/Kursliste mit Überschrift „${class}“ an."
+       	echo "   - Lege Klassen-/Kursliste mit Überschrift „${class}“ an."
         	cp "liste.numbers" "classes/lists/$class/Liste $class.numbers"
         	# Pfad speichern
         	currentfile="$(getfullname "classes/lists/$class/Liste $class.numbers")"
@@ -256,22 +302,56 @@ while true; do
 				end tell
 EOF
         	
-        	echo "   - Lege ${testnames[$level-1]}-Datei mit Überschrift „${title}“ an."
-        	cp "sek${level}_arbeit.numbers" "classes/lists/$class/${testnames[$level-1]} $class.numbers"
-        	# Pfad speichern
-        	currentfile="$(getfullname "classes/lists/$class/${testnames[$level-1]} $class.numbers")"
-			# Tabellentitel per Apple Script setzen
-			osascript <<EOF
-				tell application "Numbers"
-					open POSIX file "$currentfile"
-					tell table "Überschrift" of sheet "Einstellungen und Lehrerstatistik" of document 1
-						set the value of cell 1 of column 1 to "$title"
+			if [ "$longshort" == "kf" ]; then
+				echo "   - Lege ${testnames[$level-1]}-Datei mit Überschrift „${class} · ${semestername}“ an."
+				cp "sek${level}_arbeit.numbers" "classes/lists/$class/${testnames[$level-1]} $class.numbers"
+				# Pfad speichern
+				currentfile="$(getfullname "classes/lists/$class/${testnames[$level-1]} $class.numbers")"
+				# Tabellentitel per Apple Script setzen
+				osascript <<EOF
+					tell application "Numbers"
+						open POSIX file "$currentfile"
+						tell table "Überschrift" of sheet "Einstellungen und Lehrerstatistik" of document 1
+							set the value of cell 1 of column 1 to "$class · $semestername"
+						end tell
+						save document 1
+						close document 1
 					end tell
-					save document 1
-					close document 1
-				end tell
 EOF
-        	echo "   - Lege ${participationnames[$level-1]}-Datei mit Überschrift „${title}“ an."
+			else
+				echo "   - Lege ${testnames[$level-1]}-Datei mit Überschrift „${class} · ${semestername} · ${testnames[$level-1]} 1“ an."
+				cp "sek${level}_arbeit.numbers" "classes/lists/$class/${testnames[$level-1]} 1 $class.numbers"
+				# Pfad speichern
+				currentfile="$(getfullname "classes/lists/$class/${testnames[$level-1]} 1 $class.numbers")"
+				# Tabellentitel per Apple Script setzen
+				osascript <<EOF
+					tell application "Numbers"
+						open POSIX file "$currentfile"
+						tell table "Überschrift" of sheet "Einstellungen und Lehrerstatistik" of document 1
+							set the value of cell 1 of column 1 to "$class · $semestername · ${testnames[$level-1]} 1"
+						end tell
+						save document 1
+						close document 1
+					end tell
+EOF
+				echo "   - Lege ${testnames[$level-1]}-Datei mit Überschrift „${class} · ${semestername} · ${testnames[$level-1]} 2“ an."
+				cp "sek${level}_arbeit.numbers" "classes/lists/$class/${testnames[$level-1]} 2 $class.numbers"
+				# Pfad speichern
+				currentfile="$(getfullname "classes/lists/$class/${testnames[$level-1]} 2 $class.numbers")"
+				# Tabellentitel per Apple Script setzen
+				osascript <<EOF
+					tell application "Numbers"
+						open POSIX file "$currentfile"
+						tell table "Überschrift" of sheet "Einstellungen und Lehrerstatistik" of document 1
+							set the value of cell 1 of column 1 to "$class · $semestername · ${testnames[$level-1]} 2"
+						end tell
+						save document 1
+						close document 1
+					end tell
+EOF
+			fi
+
+        	echo "   - Lege ${participationnames[$level-1]}-Datei mit Überschrift „${class} · ${semestername}“ an."
         	cp "sek${level}_sma.numbers" "classes/lists/$class/${participationnames[$level-1]} $class.numbers"
         	# Pfad speichern
         	currentfile="$(getfullname "classes/lists/$class/${participationnames[$level-1]} $class.numbers")"
@@ -286,22 +366,39 @@ EOF
 					close document 1
 				end tell
 EOF
-        	echo "   - Lege ${finalgradesnames[$level-1]}-Datei mit Überschrift „${title}“ an."
+
+        	echo "   - Lege ${finalgradesnames[$level-1]}-Datei mit Überschrift „${class} · ${year}“ an."
         	cp "sek${level}_endnoten.numbers" "classes/lists/$class/${finalgradesnames[$level-1]} $class.numbers"
         	# Pfad speichern
         	currentfile="$(getfullname "classes/lists/$class/${finalgradesnames[$level-1]} $class.numbers")"
-			# Tabellentitel per Apple Script setzen
+        	# Fachvariante auswerten
+        	case $longshort in
+        		kf )
+        			selectsheet="Zeugnisnoten (Kurzfach)"
+        			deletesheetI="Zeugnisnoten (Langfach A)"
+					deletesheetII="Zeugnisnoten (Langfach B)"
+					;;
+				lfa )
+					selectsheet="Zeugnisnoten (Langfach A)"
+        			deletesheetI="Zeugnisnoten (Kurzfach)"
+					deletesheetII="Zeugnisnoten (Langfach B)"
+					;;
+				lfb )
+					selectsheet="Zeugnisnoten (Langfach B)"
+        			deletesheetI="Zeugnisnoten (Kurzfach)"
+					deletesheetII="Zeugnisnoten (Langfach A)"
+					;;
+        	esac
+			# Tabellentitel per Apple Script setzen und überflüssige Tabellenblätter löschen.
 			osascript <<EOF
 				tell application "Numbers"
 					open POSIX file "$currentfile"
-					tell table 1 of sheet "Zeugnisnoten (Kurzfach)" of document 1
-						set the name to "$title"
+					tell table 1 of sheet "$selectsheet" of document 1
+						set the name to "$class · $year"
 					end tell
-					tell table 1 of sheet "Zeugnisnoten (Langfach A)" of document 1
-						set the name to "$title"
-					end tell
-					tell table 1 of sheet "Zeugnisnoten (Langfach B)" of document 1
-						set the name to "$title"
+					tell document 1
+						delete sheet "$deletesheetI"
+						delete sheet "$deletesheetII"
 					end tell
 					save document 1
 					close document 1
