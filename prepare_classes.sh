@@ -148,7 +148,7 @@ EOF
 			exit
 			;;
 		* )
-			echo error_invalidinput
+			echo $error_invalidinput
 			;;
 	esac
 done
