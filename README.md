@@ -10,9 +10,13 @@ Da ich diese Werzeuge für meinen persönlichen Gebrauch entwickelt habe, sind s
 
 TeX- und Script-Dateien zur Erzeugung von Einlegern mit Ergebnissen von Klassenarbeiten.
 
+### Grobplanung
+
+Numberstabelle zur Planung der groben Unterrichtsverlaufs für ein Halbjahr in einer Lerngruppe.
+
 ### Kalender
 
-Numberstabelle zum Planen/Eintragen aller Termine eines Halbjahres als Grundlage für die Grobplanung.
+Numberstabelle zum Planen/Eintragen aller Termine eines Halbjahres als Grundlage/Übersicht für die Grobplanung (s.o.).
 
 ### Klassenliste: liste
 
@@ -44,6 +48,7 @@ Da ich ausschließlich mit **macOS** arbeite, funktionieren die meisten Werkzeug
 | Werkzeug               | Voraussetzung                                             |
 |------------------------|-----------------------------------------------------------|
 | Ergebniseinleger       | vollständige TeX-Distribution, CSV-Daten aus Notentabelle |
+| Grobplanung            | Apple Numbers                                             |
 | Kalender               | Apple Numbers                                             |
 | prepare_classes        | Apple Numbers, Notentabellen                              |
 | sek1_arbeit, …         | Apple Numbers                                             |
