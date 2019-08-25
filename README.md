@@ -10,6 +10,10 @@ Da ich diese Werzeuge für meinen persönlichen Gebrauch entwickelt habe, sind s
 
 TeX- und Script-Dateien zur Erzeugung von Einlegern mit Ergebnissen von Klassenarbeiten.
 
+### Kalender
+
+Numberstabelle zum Planen/Eintragen aller Termine eines Halbjahres als Grundlage für die Grobplanung.
+
 ### Klassenliste: liste
 
 Numberstabelle für Klassenlisten (passend zu den Bewertungstabellen, s.u.). Das zweite Tabellenblatt übernimmt die Namen aus dem ersten in der Form *Nachname, Vorname* und kann (bei passender Einstellung der Zeilenhöhe über das Tabellenformat) zum Ausdrucken und Einkleben benutzt werden.
