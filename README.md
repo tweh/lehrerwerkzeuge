@@ -44,6 +44,7 @@ Da ich ausschließlich mit **macOS** arbeite, funktionieren die meisten Werkzeug
 | Werkzeug               | Voraussetzung                                             |
 |------------------------|-----------------------------------------------------------|
 | Ergebniseinleger       | vollständige TeX-Distribution, CSV-Daten aus Notentabelle |
+| Kalender               | Apple Numbers                                             |
 | prepare_classes        | Apple Numbers, Notentabellen                              |
 | sek1_arbeit, …         | Apple Numbers                                             |
 | Stundenlistengenerator | Apple Numbers                                             |
