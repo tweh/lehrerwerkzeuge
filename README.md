@@ -84,7 +84,7 @@ Da ich ausschließlich mit **macOS** arbeite, funktionieren die meisten Werkzeug
 | Ergebniseinleger       | vollständige TeX-Distribution, CSV-Daten aus Notentabelle |
 | Grobplanung            | Apple Numbers                                             |
 | Kalender               | Apple Numbers                                             |
-| prepare_classes        | Apple Numbers, Notentabellen                              |
+| prepare_classes        | Shell/Terminal, Apple Numbers, Kursliste, Notentabellen   |
 | sek1_arbeit, …         | Apple Numbers                                             |
 | Stundenlistengenerator | Apple Numbers                                             |
 
