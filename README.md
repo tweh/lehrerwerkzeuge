@@ -2,7 +2,7 @@
 
 Dieses Repository beinhaltet (m)eine Sammlung von Dateien und Scripten zur Unterrichtsvorbereitung/-planung und Benotung. Ich stelle diese Werkzeuge hier gerne allen zur Verfügung übernehme aber grundsätzlich **keine Gewährleistung, Verantwortung oder Ähnliches!** Das gilt insbesondere für die folgenden Sätze. Beim Umgang mit Schülerdaten sind selbstverständlich jeweils die gängigen Datenschutzbestimmungen zu beachten. Neben der Passwortsicherung der Geräte, nutze ich für jede Datei mit Schülerdaten ebenfalls die Passwortfunktion. Um die Daten zwischen iPad und Mac synchronisieren nutze ich [Reselio](https://www.resilio.com), dass die Daten über ein lokales Netzwerk (z.B. beide Geräte im selben WLAN) synchronisiert und die Daten nicht über einen Server sendet, was mit der DSGVO konform sein dürfte [Unverbindliche und nicht juristisch gesicherte Aussagen!].
 
-Da ich diese Werzeuge für meinen persönlichen Gebrauch entwickelt habe, sind sie (teilweise) sher eng auf meine Bedürfnisse zugeschnitten und mögen für andere nur bedingt hilfreich sein. Sollten Sie einen Wunsch haben oder ein Problem entdecken, können Sie gerne einen [*Issue*](https://github.com/tweh/lehrerwerkzeuge/issues) anlegen.
+Da ich diese Werzeuge für meinen persönlichen Gebrauch entwickelt habe, sind sie (teilweise) sehr eng auf meine Bedürfnisse zugeschnitten und mögen für andere nur bedingt hilfreich sein. Sollten Sie einen Wunsch haben oder ein Problem entdecken, können Sie gerne dennoch einen [*Issue*](https://github.com/tweh/lehrerwerkzeuge/issues) anlegen – ich verspreche aber nichts 😉.
 
 *Hinweis: Die Namen und Daten in den Screenshots sind selbstverständlich frei erfunden.*
 
