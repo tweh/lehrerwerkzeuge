@@ -31,6 +31,13 @@ Numberstabelle zur Planung der groben Unterrichtsverlaufs für ein Halbjahr in e
 Numberstabelle zum Planen/Eintragen aller Termine eines Halbjahres als Grundlage/Übersicht für die Grobplanung (s.o.).
 
 
+### Klausurplan
+
+![Screenshot Klausurplan](screenshots/klausurplan.png)
+
+Numberstabelle zum Planen/Eintragen aller Klassenarbeiten/Klausren eines Halbjahres zur besseren Übersicht. Inkl. Darstellung der Termine als Zeitleiste.
+
+
 ### Klassen-/Kursliste: liste
 
 ![Screenshot Klassenliste](screenshots/liste.png)
@@ -84,6 +91,7 @@ Da ich ausschließlich mit **macOS** arbeite, funktionieren die meisten Werkzeug
 | Ergebniseinleger       | vollständige TeX-Distribution, CSV-Daten aus Notentabelle |
 | Grobplanung            | Apple Numbers                                             |
 | Kalender               | Apple Numbers                                             |
+| Klausurplan            | Apple Numbers                                             |
 | prepare_classes        | Shell/Terminal, Apple Numbers, Kursliste, Notentabellen   |
 | sek1_arbeit, …         | Apple Numbers                                             |
 | Stundenlistengenerator | Apple Numbers                                             |
