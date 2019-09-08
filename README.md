@@ -96,7 +96,7 @@ Da ich ausschließlich mit **macOS** arbeite, funktionieren die meisten Werkzeug
 | sek1_arbeit, …         | Apple Numbers                                             |
 | Stundenlistengenerator | Apple Numbers                                             |
 
-Da Excel nicht alle Funktionen von Numbers bietet, ist es leider auch nicht möglich, ohne großen manuellen Aufwand XLSX-Versionen der Tabellen anzubieten (siehe auch Issue #4).
+Da Excel nicht alle Funktionen von Numbers bietet, ist es leider auch nicht möglich, ohne großen manuellen Aufwand XLSX-Versionen der Tabellen anzubieten (siehe auch [Issue #4](https://github.com/tweh/lehrerwerkzeuge/issues/4)).
 
 ## Anleitungen
 
