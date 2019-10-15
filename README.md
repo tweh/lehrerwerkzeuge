@@ -44,6 +44,9 @@ Numberstabelle zum Planen/Eintragen aller Klassenarbeiten/Klausren eines Halbjah
 
 Numberstabelle für Klassenlisten (passend zu den Bewertungstabellen, s.u.). Das zweite Tabellenblatt übernimmt die Namen aus dem ersten in der Form *Nachname, Vorname* und kann (bei passender Einstellung der Zeilenhöhe über das Tabellenformat) zum Ausdrucken und Einkleben benutzt werden.
 
+### Notengrenzen
+
+Numberstabelle, zum berechnen von Notengrenzen, wenn die Prozentwerte für die beste, die schlechteste und eine ausreichende Note (oder Punktzahl) gegeben wird. Die Notengrenzen werden dann gleichmäßig verteilt, wie es auch bei den sMA-Tabellen zum Einsatz kommt.
 
 ### Script prepare_classes
 
