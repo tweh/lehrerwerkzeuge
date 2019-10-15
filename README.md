@@ -84,17 +84,12 @@ Numberstabelle zur Erzeugung von (Roh-)Datumslisten zur Planung von Unterricht z
 
 ## Systemvorraussetzungen
 
-Da ich ausschließlich mit **macOS** arbeite, funktionieren die meisten Werkzeuge auch nur unter diesem Betriebssystem und erfordern in der Regel weitere Programme o.ä.:
+Da ich ausschließlich mit **macOS** arbeite, funktionieren die meisten Werkzeuge auch nur unter diesem Betriebssystem und erfordern in der Regel weitere Programme o.ä. Sofern nicht in der folgenden Tabelle ausgeführt wird zur Nutzung des jeweiligen Werkzeuges nur *Apple Numbers* benötigt.
 
 | Werkzeug               | Voraussetzung                                             |
 |------------------------|-----------------------------------------------------------|
 | Ergebniseinleger       | vollständige TeX-Distribution, CSV-Daten aus Notentabelle |
-| Grobplanung            | Apple Numbers                                             |
-| Kalender               | Apple Numbers                                             |
-| Klausurplan            | Apple Numbers                                             |
 | prepare_classes        | Shell/Terminal, Apple Numbers, Kursliste, Notentabellen   |
-| sek1_arbeit, …         | Apple Numbers                                             |
-| Stundenlistengenerator | Apple Numbers                                             |
 
 Da Excel nicht alle Funktionen von Numbers bietet, ist es leider auch nicht möglich, ohne großen manuellen Aufwand XLSX-Versionen der Tabellen anzubieten (siehe auch [Issue #4](https://github.com/tweh/lehrerwerkzeuge/issues/4)).
 
