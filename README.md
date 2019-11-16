@@ -52,7 +52,7 @@ Numberstabelle, zum berechnen von Notengrenzen, wenn die Prozentwerte für die b
 
 ### Punktetabellen
 
-Mit dieser Tabelle können als Unterstützung  bei der vergäbe von Punkten/BE die der jeweiligen Punkt-/BE-Zahl entsprechenden Prozentzahlen ausgegeben werden. Die Notenstufen 1–6 werden farbig markiert.
+Mit dieser Tabelle können als Unterstützung  bei der vergäbe von Punkten/BE die der jeweiligen Punkt-/BE-Zahl entsprechenden Prozentzahlen ausgegeben werden. Die Notenstufen 1–6 werden farbig markiert, wobei die Prozentzahl, ab welche Stufe erreicht ist, frei eingestellt werden kann.
 
 
 ### Script prepare_classes
