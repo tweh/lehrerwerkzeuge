@@ -264,7 +264,10 @@
                   Summe \\
                \rowfont { \bfseries } \scores_level_dependent:nn { du } { Sie } &
                   \int_step_inline:nnn { 1 } { \l_scores_tasks_count_int } {
-                     \num { \use:c { csvcol \int_to_roman:n { ####1 + 4 } } } &
+                     \scores_level_dependent:nn
+                        { \num { \use:c { csvcol \int_to_roman:n { ####1 + 4 } } } }
+                        { \num { \use:c { csvcol \int_to_roman:n { ####1 + 5 } } } }
+                     &
                   }
                   \num { \Gesamt } \\
                max. &
