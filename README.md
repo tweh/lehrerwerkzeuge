@@ -42,7 +42,7 @@ Numberstabelle zum Planen/Eintragen aller Klassenarbeiten/Klausren eines Halbjah
 
 ![Screenshot Klassenliste](screenshots/liste.png)
 
-Numberstabelle für Klassenlisten (passend zu den Bewertungstabellen, s.u.). Das zweite Tabellenblatt übernimmt die Namen aus dem ersten in der Form *Nachname, Vorname* und kann (bei passender Einstellung der Zeilenhöhe über das Tabellenformat) zum Ausdrucken und Einkleben benutzt werden.
+Numberstabelle für Klassenlisten (passend zu den Bewertungstabellen, s.u.). Das Tabellenblatt „Kursheft“ übernimmt die Namen aus dem ersten in der Form *Nachname, Vorname* und kann (bei passender Einstellung der Zeilenhöhe über das Tabellenformat) zum Ausdrucken und Einkleben benutzt werden. Außerdem werden Listen zur HA-Kontrolle bereitgestellt. Diese bieten beim Ausdruck auf zwei Seiten Platz für etwa 40 Kontrollen.
 
 
 ### Notengrenzen
