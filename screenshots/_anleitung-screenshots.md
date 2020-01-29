@@ -1,5 +1,7 @@
 ## Anleitung für Screenshots
 
+*Für diesen Ablauf gibt es auch eine [Photoshop-Aktion](_lehrerwerkzeuge.atn).*
+
 1. Bei Tabellen die Formatleiste ausblenden, keine Zelle sollte angewählt sein.
 2. Fenster auf 1/4 Bildschirmgröße des 27-Zöllers einstellen (= 2048px × 1418px)
 3. Höhe ggf. verkleinern/vergrößern. Die Screenshots sollten aber alle dieselbe Breite (2048px) haben.
