@@ -47,6 +47,8 @@ Numberstabelle für Klassenlisten (passend zu den Bewertungstabellen, s.u.). Das
 
 ### Notengrenzen
 
+![Screenshot Klassenliste](screenshots/notengrenzen.png)
+
 Numberstabelle, zum berechnen von Notengrenzen, wenn die Prozentwerte für die beste, die schlechteste und eine ausreichende Note (oder Punktzahl) gegeben wird. Die Notengrenzen werden dann gleichmäßig verteilt, wie es auch bei den sMA-Tabellen zum Einsatz kommt.
 
 
