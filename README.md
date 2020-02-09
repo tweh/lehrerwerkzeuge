@@ -59,11 +59,13 @@ Numberstabelle, zum Berechnen von Notengrenzen, wenn die Prozentwerte für die b
 Mit dieser Tabelle können als Unterstützung  bei der vergäbe von Punkten/BE die der jeweiligen Punkt-/BE-Zahl entsprechenden Prozentzahlen ausgegeben werden. Die Notenstufen 1–6 werden farbig markiert, wobei die Prozentzahl, ab welche Stufe erreicht ist, frei eingestellt werden kann.
 
 
-### Script prepare_classes
+### Script vorbereiter mit Tabelle vorbereiter_tabelle
 
-![Screenshot Script](screenshots/prepare_classes.png)
+![Screenshot Vorbereiter-Tabelle](screenshots/vorbereiter_tabelle.png)
 
-Shell-Script zum automatisierten Anlegen von Klassenordnern, Notenlisten und Notizdateien zur Unterrichtsplanung.
+![Screenshot Vorbereiter-Dialog](screenshots/vorbereiter_dialog.png)
+
+Apple-Script zum automatisierten Anlegen von Klassenordnern, Notenlisten und Notizdateien zur Unterrichtsplanung.
 
 
 ### Bewertungstabellen: sek1_arbeit, sek1_endnoten, sek1_sma, sek2_arbeit, sek2_endnoten, sek2_sma
@@ -103,7 +105,7 @@ Da ich ausschließlich mit **macOS** arbeite, funktionieren die meisten Werkzeug
 | Werkzeug               | Voraussetzung                                             |
 |------------------------|-----------------------------------------------------------|
 | Ergebniseinleger       | vollständige TeX-Distribution, CSV-Daten aus Notentabelle |
-| prepare_classes        | Shell/Terminal, Apple Numbers, Kursliste, Notentabellen   |
+| vorbereiter            | Apple Numbers, Klassen-/Kursliste `vorbereiter_tabelle`   |
 
 Da Excel nicht alle Funktionen von Numbers bietet, ist es leider auch nicht möglich, ohne großen manuellen Aufwand XLSX-Versionen der Tabellen anzubieten (siehe auch [Issue #4](https://github.com/tweh/lehrerwerkzeuge/issues/4)).
 
