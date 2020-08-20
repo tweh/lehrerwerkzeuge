@@ -15,9 +15,7 @@ Diese Variablen werden ganz am Beginn definiert.
 - `DEFAULT_DELAY`: Zeit, die nach dem Öffnen einer Numbers-Datei abgewartet wird ehe mit der Bearbeitung der Datei begonnen wird
 - `EXAM_NAMES` *(record mit `sek1`, `sek2`)*: Liste der Bezeichner für KA abhängig vom Level
 - `EXAM_SINGULAR_TEXT` *(record mit `sek1`, `sek2`)*: Liste mit den Singularformen für „KA pro Schuljahr“ im KA-Formular
-- `PREPERATOR_TABLE_FILE`: Verweis auf die Tabelle `vorbereiter_tabelle` (Dateiname kann abweichen)
-- `TARGET_FOLDER`: Verweis auf den Speicherort der anzulegenden Ordner
-- `TEMPLATE_FOLDER`: Verweis auf den Ordner mit den Vorlagen (`lehrerwerkzeuge`)
+- `START_TIME`: Startzeit des Scriptes (`END_TIME` wird zum Ende des Scriptes erst definiert)
 
 
 ### weitere Variablen
@@ -25,44 +23,54 @@ Diese Variablen werden ganz am Beginn definiert.
 Diese Variablen werden im Verlauf des Scripts definiert.  
 (in alphabetischer Reihenfolge)
 
-- `CALENDER_FILE`: Verweis auf den Kalender
+- `CALENDER_FILE`: Verweis auf Kalenderdatei 
 - `CLASS_FOLDER`: Name für den/die Klassenordner
+- `CLASS_ID_SHORT`: `CLASS_ID` mit Fachkürzel
 - `CLASS_ID`: (eindeutiger) Bezeichner für die Klasse, der aus dem Fach und dem Klassennamen gebildet wird
 - `CLASS_MESSAGE`: Text für Abschlussmeldung, wie viele Klassen angelegt wurden
 - `CLASS_TAG`: String mit dem Tag für eine Klasse für die Notizen
-- `CLASSES_TOTAL`: Anzahl der zu bearbeitenden Klassen
+- `CLASSES_TOTAL`: Gesamtzahl der Klassen in `CLASSES_LIST` 
+- `CURRENT_CLASS_AND_SEMESTER_NAME_SHORT`: `CURRENT_CLASS_AND_SEMESTER_NAME` mit Fachkürzel
 - `CURRENT_CLASS_AND_SEMESTER_NAME`: Kombination aus Klassen- und Halbjahresbezeichner für Überschriften, Dateinamen etc.
 - `CURRENT_CLASS` *(record)*: Objekt mit den Infos der aktuellen Klasse (Parameter s.u.)
 - `CURRENT_EXAM_NUMBER`: Nummer der gerade in Bearbeitung befindlichen Arbeit
-- `CURRENT_FILE`: temporärer Versweis auf die gerade zu bearbeitende Datei
-- `DO_CLASSES` *(boolean)*: Entscheidet, ob der Ordner mit den Klassenordnern angelegt und befüllt wird.
-- `DO_LISTS` *(boolean)*: Entscheidet, ob der Ordner mit den Notenlisten angelegt und befüllt wird.
-- `DO_NOTES` *(boolean)*: Entscheidet, ob der Ordner mit den Notizen angelegt und befüllt wird.
+- `CURRENT_FILE`: temporärer Verweis auf die gerade zu bearbeitende Datei
+- `DO_CLASSES` *(bool)*: wahr, wenn Klassenordner angelegt werden sollen (bezieht sich auf `PARAM_CLASSES_LISTS`)
+- `DO_LISTS` *(bool)*: wahr, wenn Listenordner angelegt werden sollen (bezieht sich auf `PARAM_FOLDER_LISTS`)
+- `DO_NOTES` *(bool)*: wahr, wenn Notizenordner angelegt werden sollen (bezieht sich auf `PARAM_NOTES_LISTS`)
+- `END_TIME`: Endzeit des Scriptes
 - `EXAM_NAME`: von der Stufe abhängige Bezeichnung für Arbeiten
-- `EXAM_PLAN_ROW`: Laufvariable zum Füllen des Klausurplans
+- `EXAM_PLAN_ROW`: Laufvariable für Zeilen im Klausurplan (zum Eintragen der Klassen)
 - `EXAM_START_NUMBER`: Startwert für die Zählung der Arbeiten
-- `EXAMPLAN_FILE`: Verweis auf den Klausurplan
+- `EXAMPLAN_FILE_NAME`: Dateiname für Klausurplandatei
+- `EXAMPLAN_FILE`: Verweis auf die Klausurplandatei
 - `EXAMS_IN_SEMESTER`: Anzahl der Arbeiten im aktuellen Halbjahr
 - `EXAMS_TOTAL`: Summe der Arbeiten im Schuljahr 
 - `FOLDER_CLASS_FOLDER`: Verweis auf den Klassenordner der aktuellen Klasse
 - `FOLDER_CLASS_LISTS`: Verweis of Listenordner der aktuellen Klasse
 - `FOLDER_CLASS_NOTES`: Verweis auf den Notizenordner der aktuellen Klasse
 - `FOLDER_CLASSES`: Verweis auf den Ordner für die Klassenordner
+- `FOLDER_EXAM_INLAYS_NAME`: Name für den Ergebniseinlegerordner
+- `FOLDER_EXAM_INLAYS`: Verweis auf den Ergebniseinlegerordner
 - `FOLDER_LISTS`: Verweis auf den Ordner für die Notenlisten
 - `FOLDER_NOTES_POSIX`: Verweis auf den Ordner für die Notizen(unterordner) im Shell-kompatiblem Format (= mit `/` getrennte Pfadangabe)
 - `FOLDER_NOTES`: Verweis auf den Ordner für die Notizen(ordner)
-- `GENERATOR_FILE`: Verweis auf den Stundenlistengenerator
-- `POINTTABLE_FILE`: Verweis auf die Punktetabelle
-- `PROGRESS_COUNT`: Zähler für die Fortschrittsanzeige
+- `GENERATOR_FILE`: Verweis auf die Stundenlistengeneratordatei 
+- `INLAY_FILE_NAME`: Name für die Ergebniseinlegerdatei
+- `POINTTABLE_FILE`: Verweis auf die Punktetabellendatei
+- `PREPERATOR_TABLE_FILE`: Verweis auf die Tabelle `vorbereiter_tabelle` (Dateiname kann abweichen)
+- `PROGRESS_COUNT`: Laufvariable für die Fortschrittsanzeige 
+- `SCRIPT_PATH`: Speicherort des Scriptes
 - `SHEET_NAME`: temporäre Variable für die Blattbezeichnung in der Endnotendatei
-- `SINGLE_SEMESTER`: optionaler Präfix für epochale Fächer
+- `SINGLE_SEMESTER`: optionaler Suffix für epochale Fächer
 - `TABLE_NAME`: temporäre Variable für die Tabellenbezeichnung bei der Gewichtung in der Endnotendatei
-
+- `TARGET_FOLDER`: Verweis auf den Speicherort der anzulegenden Ordner
+- `TEMPLATE_FOLDER`: Verweis auf den Ordner mit den Vorlagen (`lehrerwerkzeuge`)
 
 ### Parameter für das Halbjahr
 
 Diese Variablen werden aus der Numbers-Datei ausgelesen.  
-(in der Reihenfolge aus der Vorbereiter-Tabelle)
+(in alphabetischer Reihenfolge)
 
 - `PARAM_ADD_CLASS_TO_EXAM_PLAN` *(bool)*: Klassen in Klausurplan eintragen
 - `PARAM_FOLDER_CLASSES`: Name für den Ordner mit den Klassenordnern
@@ -82,8 +90,8 @@ Diese Variablen werden aus der Numbers-Datei ausgelesen.
 
 ### Parameter für Klassen/Kurse
 
-Das *record*-Objekt `CURRENT_CLASS` (s.o.) enthält für jede Klasse / jeden Kurs einen Eintrag, mit den folgenden Eigenschaften. Diese Daten werden ebenfalls aus der Numbers-Tabelle entnommen.  
-(in der Reihenfolge aus der Vorbereiter-Tabelle)
+Das *record*-Objekt `CURRENT_CLASS` (s.o.) enthält für jede Klasse / jeden Kurs einen Eintrag, mit den folgenden Eigenschaften. Diese Daten werden ebenfalls aus der Numbers-Tabelle entnommen. Zu jeder genannten Variable `p_xxx` gibt es zusätzlich eine entsprechende Variable `VALUE_XXX`, die kurzzeitig den Wert aus der Tabelle aufnimmt eher die Klasse in `CLASSES_LIST` geschrieben wird.  
+(in alphabetischer Reihenfolge)
 
 - `p_best_score_from`: Wert, wann es die beste Note gibt (für sMA-Tabelle)
 - `p_class`: Klassenbezeichnung
@@ -107,3 +115,11 @@ Das *record*-Objekt `CURRENT_CLASS` (s.o.) enthält für jede Klasse / jeden Kur
 - `p_subject_short`: Fachkürzel
 - `p_subject`: Fach
 - `p_worse_score_from`: Wert, wann es die ausreichende Note gibt (für sMA-Tabelle)
+- `VALUE_IGNORE` *(bool)*: Variable zum ignoreien einer Klasse beim Einlesen, diese Klasse wird gar nicht erst in `CLASSES_LIST` aufgenommen.
+
+## im Script definierte Funktionen
+
+(in alphabetischer Reihenfolge)
+
+- `cleanFileName(Text)`: Wandelt einen String in einen „sauberen“ Dateinamen um
+- `TimeToText(Zeit)`: Wandelt eine Zeitangabe in die Form `hh:mm:ss` um
