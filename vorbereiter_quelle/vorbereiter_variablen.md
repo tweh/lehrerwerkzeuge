@@ -26,8 +26,8 @@ Diese Variablen werden im Verlauf des Scripts definiert.
 (in alphabetischer Reihenfolge)
 
 - `CALENDER_FILE`: Verweis auf den Kalender
-- `CLASS_ID`: (eindeutiger) Bezeichner für die Klasse, der aus dem Fach und dem Klassennamen gebildet wird
 - `CLASS_FOLDER`: Name für den/die Klassenordner
+- `CLASS_ID`: (eindeutiger) Bezeichner für die Klasse, der aus dem Fach und dem Klassennamen gebildet wird
 - `CLASS_MESSAGE`: Text für Abschlussmeldung, wie viele Klassen angelegt wurden
 - `CLASS_TAG`: String mit dem Tag für eine Klasse für die Notizen
 - `CLASSES_TOTAL`: Anzahl der zu bearbeitenden Klassen
@@ -39,6 +39,7 @@ Diese Variablen werden im Verlauf des Scripts definiert.
 - `DO_LISTS` *(boolean)*: Entscheidet, ob der Ordner mit den Notenlisten angelegt und befüllt wird.
 - `DO_NOTES` *(boolean)*: Entscheidet, ob der Ordner mit den Notizen angelegt und befüllt wird.
 - `EXAM_NAME`: von der Stufe abhängige Bezeichnung für Arbeiten
+- `EXAM_PLAN_ROW`: Laufvariable zum Füllen des Klausurplans
 - `EXAM_START_NUMBER`: Startwert für die Zählung der Arbeiten
 - `EXAMPLAN_FILE`: Verweis auf den Klausurplan
 - `EXAMS_IN_SEMESTER`: Anzahl der Arbeiten im aktuellen Halbjahr
@@ -56,7 +57,6 @@ Diese Variablen werden im Verlauf des Scripts definiert.
 - `SHEET_NAME`: temporäre Variable für die Blattbezeichnung in der Endnotendatei
 - `SINGLE_SEMESTER`: optionaler Präfix für epochale Fächer
 - `TABLE_NAME`: temporäre Variable für die Tabellenbezeichnung bei der Gewichtung in der Endnotendatei
-- `EXAM_PLAN_ROW`: Laufvariable zum Füllen des Klausurplans
 
 
 ### Parameter für das Halbjahr
@@ -64,20 +64,20 @@ Diese Variablen werden im Verlauf des Scripts definiert.
 Diese Variablen werden aus der Numbers-Datei ausgelesen.  
 (in der Reihenfolge aus der Vorbereiter-Tabelle)
 
-- `PARAM_NAME`: Name der Lehrkraft
-- `PARAM_YEAR`: Schuljahr
-- `PARAM_SEMESTER` *(integer)*: Halbjahresnummer (1 oder 2)
-- `PARAM_SEMESTER_NAME`: Bezeichner für das Halbjahr
-- `PARAM_FOLDER_LISTS`: Name für den Ordner mit den Notenlisten etc.
+- `PARAM_ADD_CLASS_TO_EXAM_PLAN` *(bool)*: Klassen in Klausurplan eintragen
 - `PARAM_FOLDER_CLASSES`: Name für den Ordner mit den Klassenordnern
+- `PARAM_FOLDER_LISTS`: Name für den Ordner mit den Notenlisten etc.
 - `PARAM_FOLDER_NOTES`: Name für den Ordner mit den Notizen
-- `PARAM_NOTES_IN_SUBFOLDER` *(bool)*: Notizen in Klassenunterordner ablegen
 - `PARAM_INCLUDE_CALENDAR` *(bool)*: Kalenderdatei hinzufügen
 - `PARAM_INCLUDE_EXAMPLAN` *(bool)*: Klausurplan hinzufügen
-- `PARAM_ADD_CLASS_TO_EXAM_PLAN` *(bool)*: Klassen in Klausurplan eintragen
-- `PARAM_INCLUDE_POINTTABLE` *(bool)*: Punktetabelle hinzufügen
 - `PARAM_INCLUDE_GENERATOR` *(bool)*: Stundenlistengenerator hinzufügen
+- `PARAM_INCLUDE_POINTTABLE` *(bool)*: Punktetabelle hinzufügen
+- `PARAM_NAME`: Name der Lehrkraft
+- `PARAM_NOTES_IN_SUBFOLDER` *(bool)*: Notizen in Klassenunterordner ablegen
+- `PARAM_SEMESTER_NAME`: Bezeichner für das Halbjahr
+- `PARAM_SEMESTER` *(integer)*: Halbjahresnummer (1 oder 2)
 - `PARAM_SHORT_FOLDER_NAME` *(bool)*: Fachkürzel für Ordnernamen
+- `PARAM_YEAR`: Schuljahr
 
 
 ### Parameter für Klassen/Kurse
@@ -85,24 +85,24 @@ Diese Variablen werden aus der Numbers-Datei ausgelesen.
 Das *record*-Objekt `CURRENT_CLASS` (s.o.) enthält für jede Klasse / jeden Kurs einen Eintrag, mit den folgenden Eigenschaften. Diese Daten werden ebenfalls aus der Numbers-Tabelle entnommen.  
 (in der Reihenfolge aus der Vorbereiter-Tabelle)
 
-- `p_subject`: Fach
-- `p_subject_short`: Fachkürzel
+- `p_best_score_from`: Wert, wann es die beste Note gibt (für sMA-Tabelle)
 - `p_class`: Klassenbezeichnung
-- `p_level` *(Wert: `?`, `sek1` oder `sek2`)*: Stufe
-- `p_is_single_semester` *(bool)*: epochales Fach
+- `p_exam_duration` *(string)*: Dauer einer Arbeit
+- `p_exam_weight`: Gewicht der Arbeiten (relevant für 2 und 3/4 Var. A)
 - `p_exams_in_first_semester`: Anzahl der Arbeiten
 - `p_exams_in_second_semester`: Anzahl der Arbeiten in diesem Halbjahr 
 - `p_exams_variant` *(Wert: `A` oder `B`)*: Variante der Endnotenberechnung
-- `p_exam_weight`: Gewicht der Arbeiten (relevant für 2 und 3/4 Var. A)
 - `p_first_exam_weight`: Gewicht der 1. Arbeit (relevant für 3/4 Var. A und B)
-- `p_exam_duration` *(string)*: Dauer einer Arbeit
-- `p_best_score_from`: Wert, wann es die beste Note gibt (für sMA-Tabelle)
-- `p_worse_score_from`: Wert, wann es die ausreichende Note gibt (für sMA-Tabelle)
-- `p_include_list` *(bool)*: Klassenliste hinzufügen
 - `p_include_exam_grades` *(bool)*: KA-Dateien hinzufügen
-- `p_include_inclass_grades` *(bool)*: sMA-Dateien hinzufügen
 - `p_include_final_grades` *(bool)*: Endnotendateien hinzufügen
-- `p_include_planner` *(bool)*: Grobplaner hinzufügen
+- `p_include_inclass_grades` *(bool)*: sMA-Dateien hinzufügen
+- `p_include_list` *(bool)*: Klassenliste hinzufügen
 - `p_include_note_contents` *(bool)*: Notiz „Themenplanung“ hinzufügen
-- `p_include_note_overview` *(bool)*: Notiz „Übersicht“ hinzufügen
 - `p_include_note_first_session` *(bool)*: Notiz für erste Sitzung hinzufügen
+- `p_include_note_overview` *(bool)*: Notiz „Übersicht“ hinzufügen
+- `p_include_planner` *(bool)*: Grobplaner hinzufügen
+- `p_is_single_semester` *(bool)*: epochales Fach
+- `p_level` *(Wert: `?`, `sek1` oder `sek2`)*: Stufe
+- `p_subject_short`: Fachkürzel
+- `p_subject`: Fach
+- `p_worse_score_from`: Wert, wann es die ausreichende Note gibt (für sMA-Tabelle)
