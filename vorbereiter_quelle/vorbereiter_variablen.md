@@ -56,6 +56,7 @@ Diese Variablen werden im Verlauf des Scripts definiert.
 - `SHEET_NAME`: temporäre Variable für die Blattbezeichnung in der Endnotendatei
 - `SINGLE_SEMESTER`: optionaler Präfix für epochale Fächer
 - `TABLE_NAME`: temporäre Variable für die Tabellenbezeichnung bei der Gewichtung in der Endnotendatei
+- `EXAM_PLAN_ROW`: Laufvariable zum Füllen des Klausurplans
 
 
 ### Parameter für das Halbjahr
@@ -73,6 +74,7 @@ Diese Variablen werden aus der Numbers-Datei ausgelesen.
 - `PARAM_NOTES_IN_SUBFOLDER` *(bool)*: Notizen in Klassenunterordner ablegen
 - `PARAM_INCLUDE_CALENDAR` *(bool)*: Kalenderdatei hinzufügen
 - `PARAM_INCLUDE_EXAMPLAN` *(bool)*: Klausurplan hinzufügen
+- `PARAM_ADD_CLASS_TO_EXAM_PLAN` *(bool)*: Klassen in Klausurplan eintragen
 - `PARAM_INCLUDE_POINTTABLE` *(bool)*: Punktetabelle hinzufügen
 - `PARAM_INCLUDE_GENERATOR` *(bool)*: Stundenlistengenerator hinzufügen
 - `PARAM_SHORT_FOLDER_NAME` *(bool)*: Fachkürzel für Ordnernamen
