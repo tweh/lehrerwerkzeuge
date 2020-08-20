@@ -94,6 +94,7 @@ Das *record*-Objekt `CURRENT_CLASS` (s.o.) enthält für jede Klasse / jeden Kur
 - `p_exams_variant` *(Wert: `A` oder `B`)*: Variante der Endnotenberechnung
 - `p_first_exam_weight`: Gewicht der 1. Arbeit (relevant für 3/4 Var. A und B)
 - `p_include_exam_grades` *(bool)*: KA-Dateien hinzufügen
+- `p_include_exam_inlays` *(bool)*: Ergebniseinleger hinzufügen
 - `p_include_final_grades` *(bool)*: Endnotendateien hinzufügen
 - `p_include_inclass_grades` *(bool)*: sMA-Dateien hinzufügen
 - `p_include_list` *(bool)*: Klassenliste hinzufügen
