@@ -26,7 +26,8 @@ Diese Variablen werden im Verlauf des Scripts definiert.
 (in alphabetischer Reihenfolge)
 
 - `CALENDER_FILE`: Verweis auf den Kalender
-- `CLASS_ID`: (eindeutiger) Bezeichner für die Klasse, der aus dem Fach und dem Klassennamen gebildet wird 
+- `CLASS_ID`: (eindeutiger) Bezeichner für die Klasse, der aus dem Fach und dem Klassennamen gebildet wird
+- `CLASS_FOLDER`: Name für den/die Klassenordner
 - `CLASS_MESSAGE`: Text für Abschlussmeldung, wie viele Klassen angelegt wurden
 - `CLASS_TAG`: String mit dem Tag für eine Klasse für die Notizen
 - `CLASSES_TOTAL`: Anzahl der zu bearbeitenden Klassen
@@ -74,6 +75,7 @@ Diese Variablen werden aus der Numbers-Datei ausgelesen.
 - `PARAM_INCLUDE_EXAMPLAN` *(bool)*: Klausurplan hinzufügen
 - `PARAM_INCLUDE_POINTTABLE` *(bool)*: Punktetabelle hinzufügen
 - `PARAM_INCLUDE_GENERATOR` *(bool)*: Stundenlistengenerator hinzufügen
+- `PARAM_SHORT_FOLDER_NAME` *(bool)*: Fachkürzel für Ordnernamen
 
 
 ### Parameter für Klassen/Kurse
@@ -82,6 +84,7 @@ Das *record*-Objekt `CURRENT_CLASS` (s.o.) enthält für jede Klasse / jeden Kur
 (in der Reihenfolge aus der Vorbereiter-Tabelle)
 
 - `p_subject`: Fach
+- `p_subject_short`: Fachkürzel
 - `p_class`: Klassenbezeichnung
 - `p_level` *(Wert: `?`, `sek1` oder `sek2`)*: Stufe
 - `p_is_single_semester` *(bool)*: epochales Fach
