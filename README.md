@@ -65,7 +65,7 @@ Mit dieser Tabelle können als Unterstützung  bei der vergäbe von Punkten/BE d
 
 ![Screenshot Vorbereiter-Dialog](screenshots/vorbereiter_dialog.png)
 
-![Vorbereiter-Script in Aktion](screenshots/vorbereiter_video.mp4)
+[Video: Vorbereiter-Script in Aktion](screenshots/vorbereiter_video.mp4)
 
 Apple-Script zum automatisierten Anlegen von Klassenordnern, Notenlisten und Notizdateien zur Unterrichtsplanung.
 
