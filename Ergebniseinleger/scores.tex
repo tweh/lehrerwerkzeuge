@@ -73,6 +73,7 @@
 \tl_new:N \l_scores_avg_total_points_tl
 \tl_new:N \l_scores_num_total_full_points_tl
 \tl_new:N \l_scores_percent_column_tl
+\int_new:N \l_scores_point_col_shift_int
 %% Aufgaben und Punktzahlen
 \prop_new:N \l_scores_tasks_titles_prop
 \prop_new:N \l_scores_tasks_max_points_prop
@@ -119,6 +120,7 @@
 \prg_generate_conditional_variant:Nnn \str_if_eq:nn { xn } { T, F, TF }
 \cs_generate_variant:Nn \prop_item:Nn { Nx }
 \cs_generate_variant:Nn \prop_get:NnN { NxN }
+\cs_generate_variant:Nn \int_set:Nn { Nx }
 
 % BEFEHL FÜR STUFENVARIANTEN
 \cs_new:Nn \scores_level_dependent:nn {
@@ -139,6 +141,7 @@
       \tl_set:Nx \l_scores_avg_total_points_tl { \DurchschnittPunkte }
       \tl_set:Nx \l_scores_num_total_full_points_tl { \AnzVolleGesPunktzahl }
       \tl_set:Nx \l_scores_percent_column_tl { \ProzentSpalte }
+      \int_set:Nx \l_scores_point_col_shift_int { \VersatzPunkteSpalte }
    }
    % AUFGABENTABELLE EINLESEN
    \csvreader[
@@ -270,9 +273,7 @@
                   Summe \\
                \rowfont { \bfseries } \scores_level_dependent:nn { du } { Sie } &
                   \int_step_inline:nnn { 1 } { \l_scores_tasks_count_int } {
-                     \scores_level_dependent:nn
-                        { \num { \use:c { csvcol \int_to_roman:n { ####1 + 4 } } } }
-                        { \num { \use:c { csvcol \int_to_roman:n { ####1 + 5 } } } }
+                      \num { \use:c { csvcol \int_to_roman:n { ####1 + \l_scores_point_col_shift_int } } }
                      &
                   }
                   \num { \Gesamt } \\
@@ -368,10 +369,10 @@
 % ==============================================================================
 
 \begin{document}
-\title{Physikklausur 12ph1 (Weh)}#
-\dateoftest{15. Mai 2019}#
-\dateofsignature{26. Mai 2019}#
-\level{sek2}#
+\title{Physikklausur 12ph1 (Weh)}
+\dateoftest{15. Mai 2019}
+\dateofsignature{26. Mai 2019}
+\level{sek1}
 
 \createscores
 \end{document}
