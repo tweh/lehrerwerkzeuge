@@ -117,7 +117,7 @@ Das *record*-Objekt `CURRENT_CLASS` (s.o.) enthält für jede Klasse / jeden Kur
 - `p_subject_short`: Fachkürzel
 - `p_subject`: Fach
 - `p_worse_score_from`: Wert, wann es die ausreichende Note gibt (für sMA-Tabelle)
-- `VALUE_IGNORE` *(bool)*: Variable zum ignoreien einer Klasse beim Einlesen, diese Klasse wird gar nicht erst in `CLASSES_LIST` aufgenommen.
+- `VALUE_IGNORE` *(bool)*: Variable zum Ignorieren einer Klasse beim Einlesen, diese Klasse wird gar nicht erst in `CLASSES_LIST` aufgenommen.
 
 ## im Script definierte Funktionen
 
