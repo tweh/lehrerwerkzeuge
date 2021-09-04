@@ -32,6 +32,8 @@ Diese Variablen werden im Verlauf des Scripts definiert.
 - `CLASSES_TOTAL`: Gesamtzahl der Klassen in `CLASSES_LIST` 
 - `CURRENT_CLASS_AND_SEMESTER_NAME_SHORT`: `CURRENT_CLASS_AND_SEMESTER_NAME` mit Fachkürzel
 - `CURRENT_CLASS_AND_SEMESTER_NAME`: Kombination aus Klassen- und Halbjahresbezeichner für Überschriften, Dateinamen etc.
+- `CURRENT_CLASS_AND_YEAR_SHORT`: `CURRENT_CLASS_AND_YEAR` mit Fachkürzel
+- `CURRENT_CLASS_AND_YEAR`: Kombination aus Klassenbezeichner und Schuljahr für Überschriften, Dateinamen etc.
 - `CURRENT_CLASS` *(record)*: Objekt mit den Infos der aktuellen Klasse (Parameter s.u.)
 - `CURRENT_EXAM_NUMBER`: Nummer der gerade in Bearbeitung befindlichen Arbeit
 - `CURRENT_FILE`: temporärer Verweis auf die gerade zu bearbeitende Datei
