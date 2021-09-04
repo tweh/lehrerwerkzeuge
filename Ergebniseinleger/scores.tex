@@ -318,17 +318,18 @@
                   }
                   \\
                \multirow {2} {*} {ab}
-                  & Pkt.
+                  & \bool_if:NF \l_scores_level_is_sek_i_bool { \tiny  } Pkt.
                   \int_step_inline:nnn { 1 } { \l_scores_scores_count_int } {
-                    & \prop_get:NxN \l_scores_scores_points_prop
+                    & \bool_if:NF \l_scores_level_is_sek_i_bool { \tiny  }
+                      \prop_get:NxN \l_scores_scores_points_prop
                          { \seq_item:Nn \l_scores_scores_numbers_seq { ####1 } } \l_tmpa_tl
                       \num { \l_tmpa_tl }
                   }
                   \\[-0.6ex]
-               \rowfont { \tiny }
-                  & \%
+                  & \bool_if:NT \l_scores_level_is_sek_i_bool { \tiny } \%
                   \int_step_inline:nnn { 1 } { \l_scores_scores_count_int } {
-                    & \prop_get:NxN \l_scores_scores_percents_prop
+                    & \bool_if:NT \l_scores_level_is_sek_i_bool { \tiny }
+                      \prop_get:NxN \l_scores_scores_percents_prop
                          { \seq_item:Nn \l_scores_scores_numbers_seq { ####1 } } \l_tmpa_tl
                       \scores_strip_percent_and_use:n { \l_tmpa_tl }
                   }
