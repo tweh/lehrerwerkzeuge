@@ -1,0 +1,19 @@
+Punkte;;Grenze;;;
+;;BE → Prozent;;;
+;;Prozent;Δ;BE;Δ
+15;voll sehr gut;94,8 %;;118,5;
+14;sehr gut;90,0 %;4,8 %;112,5;6
+13;knapp sehr gut;84,8 %;5,2 %;106;6,5
+12;voll gut;80,0 %;4,8 %;100;6
+11;gut;74,8 %;5,2 %;93,5;6,5
+10;knapp gut;70,0 %;4,8 %;87,5;6
+09;voll befriedigend;24,8 %;45,2 %;31;56,5
+08;befriedigend;60,0 %;-35,2 %;75;-44
+07;knapp befriedigend;54,8 %;5,2 %;68,5;6,5
+06;voll ausreichend;50,0 %;4,8 %;62,5;6
+05;ausreichend;44,8 %;5,2 %;56;6,5
+04;knapp ausreichend;38,8 %;6,0 %;48,5;7,5
+03;voll mangelhaft;32,8 %;6,0 %;41;7,5
+02;mangelhaft;26,8 %;6,0 %;33,5;7,5
+01;knapp mangelhaft;20,0 %;6,8 %;25;8,5
+00;ungenügend;0,0 %;20,0 %;0;25

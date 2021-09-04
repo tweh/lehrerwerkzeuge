@@ -1,0 +1,9 @@
+Note;;Grenze;;;
+;;Punkte → Prozent;;;
+;;Prozent;Δ;Punkte;Δ
+1;sehr gut;187,5 %;;112,5;
+2;gut;166,7 %;20,8 %;100;12,5
+3;befriedigend;125,0 %;41,7 %;75;25
+4;ausreichend;104,2 %;20,8 %;62,5;12,5
+5;mangelhaft;51,7 %;52,5 %;31;31,5
+6;ungenügend;0,0 %;51,7 %;0;31

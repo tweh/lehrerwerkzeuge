@@ -8,7 +8,7 @@
 
 % Schrift
 \usepackage{fontspec}
-   \setmainfont{Skolar Sans Latin}
+   \setmainfont{FiraGO}
 \usepackage{microtype}
 
 % Zeichenpaket und globale Stile
@@ -172,6 +172,12 @@
    % NOTENANZAHL ERMITTELN
    \int_set:Nn \l_scores_scores_count_int { \seq_count:N \l_scores_scores_numbers_seq }
    % EINLEGER AUSGEBEN
+   \int_compare:nT { \l_scores_tasks_count_int > 15 } {
+      \KOMAoption { paper } { landscape }
+      \pdfpageheight = \paperheight
+      \pdfpagewidth = \paperwidth
+      \textwidth = \paperwidth
+   }
    \csvreader[
       respect~percent,
       respect~sharp,
@@ -348,6 +354,12 @@
          ] { \scores_level_dependent:nn { Notenübersicht } { Punkteübersicht } };
       \end{tikzpicture}
       \par
+      % Seitenumbruch einfügen nach 3 bzw. 2 Einlegern
+      \int_compare:nTF { \l_scores_tasks_count_int > 15 } {
+         \int_compare:nT { \int_mod:nn { \thecsvrow } { 2 } = 0 } { \pagebreak }
+      } {
+         \int_compare:nT { \int_mod:nn { \thecsvrow } { 3 } = 0 } { \pagebreak }
+      }
    }
 }
 
