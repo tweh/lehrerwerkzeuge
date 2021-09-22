@@ -80,7 +80,8 @@ Diese Variablen werden aus der Numbers-Datei ausgelesen.
 - `PARAM_FOLDER_NOTES`: Name für den Ordner mit den Notizen
 - `PARAM_INCLUDE_CALENDAR` *(bool)*: Kalenderdatei hinzufügen
 - `PARAM_INCLUDE_EXAMPLAN` *(bool)*: Klausurplan hinzufügen
-- `PARAM_INCLUDE_GENERATOR` *(bool)*: Stundenlistengenerator hinzufügen
+- `PARAM_INCLUDE_LIST_GENERATOR` *(bool)*: Stundenlistengenerator hinzufügen
+- `PARAM_INCLUDE_PLAN_GENERATOR` *(bool)*: Stundenplangeneratortabelle hinzufügen
 - `PARAM_INCLUDE_POINTTABLE` *(bool)*: Punktetabelle hinzufügen
 - `PARAM_NAME`: Name der Lehrkraft
 - `PARAM_NOTES_IN_SUBFOLDER` *(bool)*: Notizen in Klassenunterordner ablegen

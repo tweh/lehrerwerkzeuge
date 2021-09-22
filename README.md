@@ -71,6 +71,13 @@ Mit dieser Tabelle können als Unterstützung  bei der vergäbe von Punkten/BE d
 Apple-Script zum automatisierten Anlegen von Klassenordnern, Notenlisten und Notizdateien zur Unterrichtsplanung.
 
 
+### Script stundenplangenerator mit Tabelle stundenplangenerator_tabelle
+
+![Screenshot Stundenplangeneratortabelle](screenshots/stundenplangenerator_tabelle.png)
+
+Apple-Script, das aus einer Numbers-Liste wiederkehrende Kalendereinträge und Erinnerungen an die Unterrichtsvorbereitung erstellt.
+
+
 ### Bewertungstabellen: sek1_arbeit, sek1_endnoten, sek1_sma, sek2_arbeit, sek2_endnoten, sek2_sma
 
 ![Screenshot Klassenarbeit 1](screenshots/sek1_arbeit-1.png)
