@@ -131,6 +131,18 @@
 
 % BEFEHL ZUR AUSGABE DER EINLEGEBLÄTTER
 \NewDocumentCommand { \createscores } { } {
+   % INFOS EINLESEN
+   \csvreader[
+      respect~percent,
+      respect~sharp,
+      separator = semicolon,
+      head~to~column~names,
+   ] { csv/Export-Infos.csv } { } {
+      \exp_args:Nx \title { \Einlegertitel }
+      \exp_args:Nx \dateoftest { \DatumGeschrieben }
+      \exp_args:Nx \dateofsignature { \DatumRueckgabe }
+      \exp_args:Nx \level { \Stufe }
+   }
    % KENNZAHLEN EINLESEN
    \csvreader[
       respect~percent,
@@ -367,10 +379,10 @@
 % ==============================================================================
 
 \begin{document}
-\title{Physikklausur 12ph1 (Weh)}
-\dateoftest{15. Mai 2019}
-\dateofsignature{26. Mai 2019}
-\level{sek2}
+%\title{}             % wird alles automatisch aus Numbers ausgelesen (s.o.)
+%\dateoftest{}
+%\dateofsignature{}
+%\level{}
 
 \createscores
 \end{document}
