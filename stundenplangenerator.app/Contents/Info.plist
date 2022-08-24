@@ -51,6 +51,8 @@
 	<string>This script needs access to Siri to run.</string>
 	<key>NSSystemAdministrationUsageDescription</key>
 	<string>This script needs access to administer this system to run.</string>
+	<key>OSAAppletShowStartupScreen</key>
+	<false/>
 	<key>WindowState</key>
 	<dict>
 		<key>bundleDividerCollapsed</key>
@@ -66,9 +68,9 @@
 		<key>positionOfDivider</key>
 		<real>388</real>
 		<key>savedFrame</key>
-		<string>1116 116 700 672 0 0 2560 1417 </string>
+		<string>1252 307 700 659 0 0 2560 1415 </string>
 		<key>selectedTab</key>
-		<string>description</string>
+		<string>result</string>
 	</dict>
 </dict>
 </plist>

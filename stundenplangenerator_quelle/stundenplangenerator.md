@@ -4,7 +4,7 @@ In diesem Ordner findet sich die AppleScript-Datei, aus der das Programm `stunde
 
 Hinweise zur Programmierung finden sich in Form von kurzen Kommentaren im Quelltext, während die Anleitung zur Nutzung in der Numbers-Datei `stundenplangenerator_tabelle` zu finden ist.
 
-## im SKript verwendete Variablen
+## im Skript verwendete Variablen
 
 ### „globale“ Variablen
 
