@@ -80,6 +80,8 @@ Apple-Script, das aus einer Numbers-Liste wiederkehrende Kalendereinträge und E
 
 ### Bewertungstabellen: sek1_arbeit, sek1_endnoten, sek1_sma, sek2_arbeit, sek2_endnoten, sek2_sma
 
+Im Repository [Notentool-iPad-Sek1](https://github.com/kliets/Notentool-iPad-Sek1) gibt es eine Version von N. Klietsch, die auch bei schriftlichen Leistungen Tendenznoten (+/–) erlaubt.
+
 ![Screenshot Klassenarbeit 1](screenshots/sek1_arbeit-1.png)
 
 ![Screenshot Klassenarbeit 2](screenshots/sek1_arbeit-2.png)
