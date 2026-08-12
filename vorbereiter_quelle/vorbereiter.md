@@ -15,6 +15,8 @@ Diese Variablen werden ganz am Beginn definiert.
 - `DEFAULT_DELAY`: Zeit, die nach dem Öffnen einer Numbers-Datei abgewartet wird ehe mit der Bearbeitung der Datei begonnen wird
 - `EXAM_NAMES` *(record mit `sek1`, `sek2`)*: Liste der Bezeichner für KA abhängig vom Level
 - `EXAM_SINGULAR_TEXT` *(record mit `sek1`, `sek2`)*: Liste mit den Singularformen für „KA pro Schuljahr“ im KA-Formular
+- `HAS_CLASS_FILES_SOURCE` *(bool)*: wahr, wenn mindestens eine Klassenzeile einen Eintrag in Spalte X hat
+- `HAS_EXTRA_FILES_SOURCE` *(bool)*: wahr, wenn mindestens eine Klassenzeile einen Eintrag in Spalte Z hat
 - `START_TIME`: Startzeit des Scriptes (`END_TIME` wird zum Ende des Scriptes erst definiert)
 
 
@@ -38,6 +40,7 @@ Diese Variablen werden im Verlauf des Scripts definiert.
 - `CURRENT_EXAM_NUMBER`: Nummer der gerade in Bearbeitung befindlichen Arbeit
 - `CURRENT_FILE`: temporärer Verweis auf die gerade zu bearbeitende Datei
 - `DO_CLASSES` *(bool)*: wahr, wenn Klassenordner angelegt werden sollen (bezieht sich auf `PARAM_CLASSES_LISTS`)
+- `DO_FILES` *(bool)*: wahr, wenn zusätzliche Dateien angelegt werden sollen (bezieht sich auf `PARAM_FOLDER_FILES`)
 - `DO_LISTS` *(bool)*: wahr, wenn Listenordner angelegt werden sollen (bezieht sich auf `PARAM_FOLDER_LISTS`)
 - `DO_NOTES` *(bool)*: wahr, wenn Notizenordner angelegt werden sollen (bezieht sich auf `PARAM_NOTES_LISTS`)
 - `END_TIME`: Endzeit des Scriptes
@@ -48,12 +51,14 @@ Diese Variablen werden im Verlauf des Scripts definiert.
 - `EXAMPLAN_FILE`: Verweis auf die Klausurplandatei
 - `EXAMS_IN_SEMESTER`: Anzahl der Arbeiten im aktuellen Halbjahr
 - `EXAMS_TOTAL`: Summe der Arbeiten im Schuljahr 
-- `FOLDER_CLASS_FOLDER`: Verweis auf den Klassenordner der aktuellen Klasse
+- `FOLDER_CLASS_FILES`: Verweis auf den Zielordner (innerhalb `FOLDER_FILES`) für die zusätzlichen Dateien (Spalte Z/AA) der aktuellen Klasse
+- `FOLDER_CLASS_FOLDER`: Verweis auf den Klassenordner der aktuellen Klasse (Ziel für Dateien aus Spalte X/Y)
 - `FOLDER_CLASS_LISTS`: Verweis of Listenordner der aktuellen Klasse
 - `FOLDER_CLASS_NOTES`: Verweis auf den Notizenordner der aktuellen Klasse
 - `FOLDER_CLASSES`: Verweis auf den Ordner für die Klassenordner
 - `FOLDER_EXAM_INLAYS_NAME`: Name für den Ergebniseinlegerordner
 - `FOLDER_EXAM_INLAYS`: Verweis auf den Ergebniseinlegerordner
+- `FOLDER_FILES`: Verweis auf den (eigenständigen) Ordner für die zusätzlichen Dateien aus Spalte Z/AA
 - `FOLDER_LISTS`: Verweis auf den Ordner für die Notenlisten
 - `FOLDER_NOTES_POSIX`: Verweis auf den Ordner für die Notizen(unterordner) im Shell-kompatiblem Format (= mit `/` getrennte Pfadangabe)
 - `FOLDER_NOTES`: Verweis auf den Ordner für die Notizen(ordner)
@@ -65,8 +70,11 @@ Diese Variablen werden im Verlauf des Scripts definiert.
 - `SCRIPT_PATH`: Speicherort des Scriptes
 - `SHEET_NAME`: temporäre Variable für die Blattbezeichnung in der Endnotendatei
 - `SINGLE_SEMESTER`: optionaler Suffix für epochale Fächer
+- `SOURCE_FILE_NAME`: Laufvariable mit dem Namen der gerade zu kopierenden Vorlagendatei (aus `p_class_files_source` bzw. `p_extra_files_source`)
 - `TABLE_NAME`: temporäre Variable für die Tabellenbezeichnung bei der Gewichtung in der Endnotendatei
+- `TARGET_FILE_NAME`: Laufvariable mit dem (nach Ersetzung der Platzhalter) gewünschten Zieldateinamen (aus `p_class_files_target` bzw. `p_extra_files_target`)
 - `TARGET_FOLDER`: Verweis auf den Speicherort der anzulegenden Ordner
+- `TEMPLATE_FILES_FOLDER`: Verweis auf den Ordner mit den Dateivorlagen für die zusätzlichen Dateien
 - `TEMPLATE_FOLDER`: Verweis auf den Ordner mit den Vorlagen (`lehrerwerkzeuge`)
 
 ### Parameter für das Halbjahr
@@ -75,7 +83,9 @@ Diese Variablen werden aus der Numbers-Datei ausgelesen.
 (in alphabetischer Reihenfolge)
 
 - `PARAM_ADD_CLASS_TO_EXAM_PLAN` *(bool)*: Klassen in Klausurplan eintragen
+- `PARAM_FILES_IN_SUBFOLDERS` *(bool)*: Dateien in Klassenunterordner ablegen
 - `PARAM_FOLDER_CLASSES`: Name für den Ordner mit den Klassenordnern
+- `PARAM_FOLDER_FILES`: Name für den Ordner mit den zusätzlichen Dateien
 - `PARAM_FOLDER_LISTS`: Name für den Ordner mit den Notenlisten etc.
 - `PARAM_FOLDER_NOTES`: Name für den Ordner mit den Notizen
 - `PARAM_INCLUDE_CALENDAR` *(bool)*: Kalenderdatei hinzufügen
@@ -98,11 +108,15 @@ Das *record*-Objekt `CURRENT_CLASS` (s.o.) enthält für jede Klasse / jeden Kur
 
 - `p_best_score_from`: Wert, wann es die beste Note gibt (für sMA-Tabelle)
 - `p_class`: Klassenbezeichnung
+- `p_class_files_source` *(Liste)*: aus Spalte X extrahierte Dateinamen der Vorlagendateien, die in den Klassenordner kopiert werden
+- `p_class_files_target` *(Liste)*: aus Spalte Y extrahierte Dateinamentemplates (mit Platzhaltern) für die nach `FOLDER_CLASS_FOLDER` kopierten Dateien; Reihenfolge entspricht `p_class_files_source`
 - `p_exam_duration` *(string)*: Dauer einer Arbeit
 - `p_exam_weight`: Gewicht der Arbeiten (relevant für 2 und 3/4 Var. A)
 - `p_exams_in_first_semester`: Anzahl der Arbeiten
 - `p_exams_in_second_semester`: Anzahl der Arbeiten in diesem Halbjahr 
 - `p_exams_variant` *(Wert: `A` oder `B`)*: Variante der Endnotenberechnung
+- `p_extra_files_source` *(Liste)*: aus Spalte Z extrahierte Dateinamen der Vorlagendateien, die in den Dateienordner kopiert werden
+- `p_extra_files_target` *(Liste)*: aus Spalte AA extrahierte Dateinamentemplates (mit Platzhaltern) für die nach `FOLDER_FILES`/`FOLDER_CLASS_FILES` kopierten Dateien; Reihenfolge entspricht `p_extra_files_source`
 - `p_first_exam_weight`: Gewicht der 1. Arbeit (relevant für 3/4 Var. A und B)
 - `p_include_exam_grades` *(bool)*: KA-Dateien hinzufügen
 - `p_include_exam_inlays` *(bool)*: Ergebniseinleger hinzufügen
@@ -120,9 +134,40 @@ Das *record*-Objekt `CURRENT_CLASS` (s.o.) enthält für jede Klasse / jeden Kur
 - `p_worse_score_from`: Wert, wann es die ausreichende Note gibt (für sMA-Tabelle)
 - `VALUE_IGNORE` *(bool)*: Variable zum Ignorieren einer Klasse beim Einlesen, diese Klasse wird gar nicht erst in `CLASSES_LIST` aufgenommen.
 
+### Spalten „X“/„Y“ und „Z“/„AA“ (zusätzliche Dateien)
+
+Über zwei Spaltenpaare der Tabelle „Liste der Klassen und Kurse“ können pro Klasse/Kurs zusätzliche Dateien aus `TEMPLATE_FILES_FOLDER` kopiert und umbenannt werden. Klassenordner (`PARAM_FOLDER_CLASSES`/`FOLDER_CLASSES`) und Dateienordner (`PARAM_FOLDER_FILES`/`FOLDER_FILES`) sind dabei immer zwei getrennte Orte:
+
+- `X` (Quelldateien) und `Y` (Zieldateinamentemplates): werden in den Klassenordner der jeweiligen Klasse (`FOLDER_CLASS_FOLDER`, innerhalb `FOLDER_CLASSES`) kopiert. Setzt `DO_CLASSES` voraus.
+- `Z` (Quelldateien) und `AA` (Zieldateinamentemplates): werden in den Dateienordner (`FOLDER_FILES`) kopiert – abhängig von `PARAM_FILES_IN_SUBFOLDERS` direkt dort oder in einen Klassenunterordner (`FOLDER_CLASS_FILES`). Setzt `DO_FILES` voraus.
+
+Der Ordner mit den Dateivorlagen (`TEMPLATE_FILES_FOLDER`) wird nur dann abgefragt, wenn er auch tatsächlich gebraucht wird: `HAS_CLASS_FILES_SOURCE` bzw. `HAS_EXTRA_FILES_SOURCE` werden beim Einlesen der Klassenzeilen gesetzt, sobald mindestens eine Zeile einen Eintrag in Spalte X bzw. Z hat. Die Abfrage erfolgt nur, wenn zusätzlich die passende Ordnerart aktiviert ist: `(DO_CLASSES and HAS_CLASS_FILES_SOURCE) or (DO_FILES and HAS_EXTRA_FILES_SOURCE)`.
+
+Da eine Zelle sowohl mehrere Zeilen als auch mehrere durch Leerzeichen getrennte Werte enthalten kann, werden die einzelnen Dateinamen mit `<<` und `>>` maskiert, z. B.:
+
+```
+<<Physik Vorlage.goodnotes>> <<Sicherheit.pdf>>
+```
+
+Zwischen einem `>>` und dem nächsten `<<` dürfen beliebig viele Leerzeichen oder Zeilenumbrüche stehen (auch keiner). Die Funktion `extractMaskedTokens` extrahiert daraus die Liste der einzelnen Werte (`p_class_files_source`/`p_class_files_target` bzw. `p_extra_files_source`/`p_extra_files_target`). Die Reihenfolge der Werte muss innerhalb eines Spaltenpaars übereinstimmen (Datei *n* aus `X`/`Z` wird zu Dateiname *n* aus `Y`/`AA` umbenannt); haben die beiden Spalten eines Paars für eine Zeile eine unterschiedliche Anzahl an Werten, bricht das Script mit einer Fehlermeldung ab. Einzelne Werte dürfen leer sein (`<<>>`), in dem Fall wird für diese Position keine Datei kopiert.
+
+In den Dateinamentemplates aus Spalte `Y`/`AA` können folgende Platzhalter verwendet werden, die durch `replacePlaceholders` ersetzt werden:
+
+- `{{Fach}}` → `p_subject` (Spalte B)
+- `{{Kuerzel}}` → `p_subject_short` (Spalte C; falls leer, wird ersatzweise `p_subject` verwendet)
+- `{{Klasse}}` → `p_class` (Spalte D)
+- `{{SJ}}` → `PARAM_YEAR`
+- `{{HJ}}` → `PARAM_SEMESTER`
+- `{{HJBez}}` → `PARAM_SEMESTER_NAME`
+- `{{Name}}` → `PARAM_NAME`
+
 ## im Script definierte Funktionen
 
 (in alphabetischer Reihenfolge)
 
 - `cleanFileName(Text)`: Wandelt einen String in einen „sauberen“ Dateinamen um
+- `extractMaskedTokens(Text)`: Extrahiert aus einem mit `<<...>>` maskierten Zellentext die Liste der einzelnen Werte (s. Spalten „X“/„Y“ und „Z“/„AA“)
+- `replacePlaceholders(Text, Klasse)`: Ersetzt in einem Dateinamentemplate (Spalte Y bzw. AA) die Platzhalter durch die Werte der übergebenen Klasse (record `CURRENT_CLASS`). Greift auf `PARAM_NAME`, `PARAM_YEAR`, `PARAM_SEMESTER` und `PARAM_SEMESTER_NAME` zu; da Handler in AppleScript keinen automatischen Zugriff auf die Top-Level-Variablen des Scripts haben, sind diese vier Variablen sowohl am Scriptanfang als auch im Handler selbst per `global`-Deklaration eingebunden (sonst Fehler „… not defined“ beim Aufruf).
+- `replaceText(Text, Suchstring, Ersetzung)`: Ersetzt alle Vorkommen von `Suchstring` in `Text` durch `Ersetzung`
+- `textOrEmpty(Wert)`: Wandelt `missing value` in einen leeren String um, sonst `Wert as string`
 - `TimeToText(Zeit)`: Wandelt eine Zeitangabe in die Form `hh:mm:ss` um
