@@ -1,0 +1,606 @@
+-- Variablen
+set START_TIME to (current date)
+set CLASSES_LIST to {}
+set EXAM_NAMES to {sek1:"KA", sek2:"Klausur"}
+set EXAM_SINGULAR_TEXT to {sek1:"Arbeit im Schuljahr", sek2:"Klausur im Schuljahr"}
+set DEFAULT_DELAY to 2 -- Sekunden
+
+-- Startdialog zeigen (Script kann hier ggf. abgebrochen werden)
+display dialog "Das Script führt verschiedene Aktionen aus, um Ordner und Dateien zur Halbjahresorganisation anzulegen. Dazu müssen zunächst auch alle geöffneten Numbers Dokumente geschlossen werden. Während das Skript läuft, sollten Sie den Computer nicht benutzen.
+
+Eine detallierte Anleitung findet sich in der Vorbereiter-Tabelle (Numbers-Datei).
+Die Verwendung erfolgt auf eigene Gefahr!
+
+„OK“ klicken um das Skript zu starten." with title "Vorbereiter starten …"
+
+-- Speicherort des Scripts finden
+tell application "Finder" to set SCRIPT_PATH to (container of (path to me)) as alias
+
+-- Numbers-Tabellen schließen
+tell application "Numbers Creator Studio"
+	close every document
+end tell
+
+tell me to activate
+
+-- Vorbereiter-Tabelle abfragen
+set PREPERATOR_TABLE_FILE to choose file of type "numbers" with prompt "Vorbereiter-Tabelle wählen." default location (path to documents folder)
+
+-- Ordner mit Vorlagen abfragen
+set TEMPLATE_FOLDER to choose folder with prompt "Ordner mit Vorlagen (lehrerwerkzeuge) wählen." default location SCRIPT_PATH
+
+-- Speicherort für Ordnerstruktur abfragen
+set TARGET_FOLDER to choose folder with prompt "Zielordner wählen." default location (path to documents folder)
+
+-- Vorbereiter-Tabelle öffnen und Infos abfragen
+tell application "Numbers Creator Studio"
+	try
+		open PREPERATOR_TABLE_FILE
+		tell document 1
+			-- Globale Variablen aus der Vorbereiter-Tabelle ziehe
+			tell table "Parameter" of sheet "Parameter und Liste"
+				set PARAM_NAME to value of cell "Wert Name"
+				set PARAM_YEAR to value of cell "Wert Schuljahr"
+				set PARAM_SEMESTER to value of cell "Wert Halbjahr" as integer
+				set PARAM_SEMESTER_NAME to value of cell "Wert Halbjahresbezeichner"
+				set PARAM_FOLDER_LISTS to value of cell "Wert Unterordner für Notenlisten etc."
+				set PARAM_FOLDER_CLASSES to value of cell "Wert Unterordner für Klassenordner"
+				set PARAM_FOLDER_NOTES to value of cell "Wert Unterordner für Notizen"
+				set PARAM_NOTES_IN_SUBFOLDER to value of cell "Wert Notizen in Klassenunterordner" as boolean
+				set PARAM_INCLUDE_CALENDAR to value of cell "Wert Kalender einschließen" as boolean
+				set PARAM_INCLUDE_EXAMPLAN to value of cell "Wert Klausurplan einschließen" as boolean
+				set PARAM_ADD_CLASS_TO_EXAM_PLAN to value of cell "Wert Klassen in Klausurplan eintragen" as boolean
+				set PARAM_INCLUDE_POINTTABLE to value of cell "Wert Punktetabelle einschließen" as boolean
+				set PARAM_INCLUDE_LIST_GENERATOR to value of cell "Wert Stundenlistengenerator einschließen" as boolean
+				set PARAM_INCLUDE_PLAN_GENERATOR to value of cell "Wert Stundenplangenerator einschließen" as boolean
+				set PARAM_SHORT_FOLDER_NAME to value of cell "Wert Kürzel auch für Ordnernamen" as boolean
+			end tell
+			-- Klassenliste einlesen
+			tell table "Liste der Klassen und Kurse" of sheet "Parameter und Liste"
+				repeat with i from 3 to row count
+					set VALUE_IGNORE to value of cell i of column "A"
+					set VALUE_SUBJECT to value of cell i of column "B"
+					set VALUE_SUBJECT_SHORT to value of cell i of column "C"
+					set VALUE_CLASS to value of cell i of column "D"
+					set VALUE_LEVEL to value of cell i of column "E"
+					set VALUE_IS_SINGLE_SEMESTER to value of cell i of column "F" as boolean
+					set VALUE_EXAMS_IN_FIRST_SEMESTER to value of cell i of column "G"
+					set VALUE_EXAMS_IN_SECOND_SEMESTER to value of cell i of column "H"
+					set VALUE_EXAMS_VARIANT to value of cell i of column "I"
+					set VALUE_EXAM_WEIGHT to value of cell i of column "J"
+					set VALUE_FIRST_EXAM_WEIGHT to value of cell i of column "K"
+					set VALUE_EXAM_DURATION to value of cell i of column "L"
+					set VALUE_BEST_SCORE_FROM to value of cell i of column "M"
+					set VALUE_WORSE_SCORE_FROM to value of cell i of column "N"
+					set VALUE_INCLUDE_LIST to value of cell i of column "O" as boolean
+					set VALUE_INCLUDE_EXAM_GRADES to value of cell i of column "P" as boolean
+					set VALUE_INCLUDE_EXAM_INLAYS to value of cell i of column "Q" as boolean
+					set VALUE_INCLUDE_INCLASS_GRADES to value of cell i of column "R" as boolean
+					set VALUE_INCLUDE_FINAL_GRADES to value of cell i of column "S" as boolean
+					set VALUE_INCLUDE_PLANNER to value of cell i of column "T" as boolean
+					set VALUE_INCLUDE_NOTE_CONTENTS to value of cell i of column "U" as boolean
+					set VALUE_INCLUDE_NOTE_OVERVIEW to value of cell i of column "V" as boolean
+					set VALUE_INCLUDE_NOTE_FIRST_SESSION to value of cell i of column "W" as boolean
+					if (not VALUE_IGNORE and VALUE_SUBJECT is not equal to missing value) and (VALUE_CLASS is not equal to missing value) and (VALUE_LEVEL is not equal to "?") then
+						set CLASSES_LIST to CLASSES_LIST & {{p_subject:VALUE_SUBJECT, p_subject_short:VALUE_SUBJECT_SHORT, p_class:VALUE_CLASS, p_level:VALUE_LEVEL, p_is_single_semester:VALUE_IS_SINGLE_SEMESTER, p_exams_in_first_semester:VALUE_EXAMS_IN_FIRST_SEMESTER, p_exams_in_second_semester:VALUE_EXAMS_IN_SECOND_SEMESTER, p_exams_variant:VALUE_EXAMS_VARIANT, p_exam_weight:VALUE_EXAM_WEIGHT, p_first_exam_weight:VALUE_FIRST_EXAM_WEIGHT, p_exam_duration:VALUE_EXAM_DURATION, p_best_score_from:VALUE_BEST_SCORE_FROM, p_worse_score_from:VALUE_WORSE_SCORE_FROM, p_include_list:VALUE_INCLUDE_LIST, p_include_exam_grades:VALUE_INCLUDE_EXAM_GRADES, p_include_exam_inlays:VALUE_INCLUDE_EXAM_INLAYS, p_include_inclass_grades:VALUE_INCLUDE_INCLASS_GRADES, p_include_final_grades:VALUE_INCLUDE_FINAL_GRADES, p_include_planner:VALUE_INCLUDE_PLANNER, p_include_note_contents:VALUE_INCLUDE_NOTE_CONTENTS, p_include_note_overview:VALUE_INCLUDE_NOTE_OVERVIEW, p_include_note_first_session:VALUE_INCLUDE_NOTE_FIRST_SESSION}}
+					else if (VALUE_SUBJECT is not equal to missing value) and (VALUE_LEVEL is equal to "?") then
+						display dialog "Stufe für " & VALUE_SUBJECT & " " & VALUE_CLASS & " fehlt. Klasse/Kurs wird übersprungen."
+					end if
+				end repeat
+			end tell
+			close
+		end tell
+	on error errorMessage
+		tell me to error "Bei der Vorbereiter-Tabelle ging etwas schief: " & errorMessage
+	end try
+end tell
+
+set DO_LISTS to (PARAM_FOLDER_LISTS is not equal to missing value) as boolean
+set DO_CLASSES to (PARAM_FOLDER_CLASSES is not equal to missing value) as boolean
+set DO_NOTES to (PARAM_FOLDER_NOTES is not equal to missing value) as boolean
+
+-- Ordner anlegen, wenn gewünscht
+tell application "Finder"
+	if DO_LISTS then
+		try
+			set FOLDER_LISTS to (make new folder in folder TARGET_FOLDER with properties {name:PARAM_FOLDER_LISTS})
+		on error errorMessage
+			tell me to error "Fehler beim Anlegen des Listenordners: " & errorMessage
+		end try
+	end if
+	if DO_CLASSES then
+		try
+			set FOLDER_CLASSES to (make new folder in folder TARGET_FOLDER with properties {name:PARAM_FOLDER_CLASSES})
+		on error errorMessage
+			tell me to error "Fehler beim Anlegen des Klassenordners: " & errorMessage
+		end try
+	end if
+	if DO_NOTES then
+		try
+			set FOLDER_NOTES to (make new folder in folder TARGET_FOLDER with properties {name:PARAM_FOLDER_NOTES})
+			set FOLDER_NOTES_POSIX to the POSIX path of (FOLDER_NOTES as alias)
+		on error errorMessage
+			tell me to error "Fehler beim Anlegen des Notizenordners: " & errorMessage
+		end try
+	end if
+end tell
+
+-- ggf. Kalender hinzufügen
+if PARAM_INCLUDE_CALENDAR then
+	try
+		tell application "Finder"
+			set CALENDER_FILE to duplicate file "kalender.numbers" of folder TEMPLATE_FOLDER to folder TARGET_FOLDER
+			tell application "Numbers Creator Studio"
+				open CALENDER_FILE
+				delay DEFAULT_DELAY
+				set name of table 1 of sheet "Kalender" of document 1 to "Kalender " & PARAM_SEMESTER_NAME
+				save document 1
+				close document 1
+			end tell
+			set name of CALENDER_FILE to " Kalender " & PARAM_SEMESTER_NAME & ".numbers"
+		end tell
+	on error errorMessage
+		tell me to error "Fehler beim Kopieren des Kalenders: " & errorMessage
+	end try
+end if
+
+-- ggf. Klausurplan hinzufügen
+if PARAM_INCLUDE_EXAMPLAN then
+	try
+		tell application "Finder"
+			set EXAMPLAN_FILE to duplicate file "klausurplan.numbers" of folder TEMPLATE_FOLDER to folder TARGET_FOLDER
+			tell application "Numbers Creator Studio"
+				open EXAMPLAN_FILE
+				delay DEFAULT_DELAY
+				set name of table 1 of sheet "Plan" of document 1 to "Klausurplan " & PARAM_SEMESTER_NAME
+				save document 1
+				close document 1
+			end tell
+			set EXAM_PLAN_FILE_NAME to " Klausurplan " & PARAM_SEMESTER_NAME & ".numbers"
+			set name of EXAMPLAN_FILE to EXAM_PLAN_FILE_NAME
+			set EXAMPLAN_FILE to file EXAM_PLAN_FILE_NAME of folder TARGET_FOLDER
+		end tell
+	on error errorMessage
+		tell me to error "Fehler beim Kopieren des Klausurplans: " & errorMessage
+	end try
+end if
+
+-- ggf. Punktetabelle hinzufügen
+if PARAM_INCLUDE_POINTTABLE then
+	try
+		tell application "Finder"
+			set POINTTABLE_FILE to duplicate file "punktetabellen.numbers" of folder TEMPLATE_FOLDER to folder TARGET_FOLDER
+			set name of POINTTABLE_FILE to " Punktetabellen.numbers"
+		end tell
+	on error errorMessage
+		tell me to error "Fehler beim Kopieren der Punktetabelle: " & errorMessage
+	end try
+end if
+
+-- ggf. Übersichtsgenerator hinzufügen
+if PARAM_INCLUDE_LIST_GENERATOR then
+	try
+		tell application "Finder"
+			set GENERATOR_FILE to duplicate file "stundenlistengenerator.numbers" of folder TEMPLATE_FOLDER to folder TARGET_FOLDER
+			tell application "Numbers Creator Studio"
+				open GENERATOR_FILE
+				delay DEFAULT_DELAY
+				set name of table 1 of sheet "Kalender" of document 1 to "Kalender " & PARAM_SEMESTER_NAME
+				save document 1
+				close document 1
+			end tell
+			set name of GENERATOR_FILE to "Stundenlistengenerator " & PARAM_SEMESTER_NAME & ".numbers"
+		end tell
+	on error errorMessage
+		tell me to error "Fehler beim Kopieren des Stundenlistengenerators: " & errorMessage
+	end try
+end if
+
+-- ggf. Stundenplangeneratortabelle hinzufügen
+if PARAM_INCLUDE_PLAN_GENERATOR then
+	try
+		tell application "Finder"
+			set GENERATOR_FILE to duplicate file "stundenplangenerator_tabelle.numbers" of folder TEMPLATE_FOLDER to folder TARGET_FOLDER
+			set name of GENERATOR_FILE to "Stundenplan " & PARAM_SEMESTER_NAME & ".numbers"
+		end tell
+	on error errorMessage
+		tell me to error "Fehler beim Kopieren des Stundenplangenerators: " & errorMessage
+	end try
+end if
+
+-- Klassen anlegen etc.
+-- -- Laufvariable für Klasurplan
+set EXAM_PLAN_ROW to 2
+-- -- Fortschrittsanzeige vorbereiten
+set CLASSES_TOTAL to length of CLASSES_LIST
+set progress total steps to CLASSES_TOTAL
+set progress completed steps to 0
+set progress description to "Klassen/Kurse anlegen …"
+set progress additional description to "… wird vorbereitet."
+set PROGRESS_COUNT to 0
+-- -- durch Klassenliste iterieren
+repeat with CURRENT_CLASS in CLASSES_LIST
+	-- Zähler für Fortschrittsanzeige erhöhen
+	set PROGRESS_COUNT to PROGRESS_COUNT + 1
+	-- Klassenname und allgemeine Infos/Variablen festlegen
+	set CLASS_ID to p_subject of CURRENT_CLASS & " " & p_class of CURRENT_CLASS
+	if p_subject_short of CURRENT_CLASS is equal to missing value then
+		set CLASS_ID_SHORT to p_subject of CURRENT_CLASS & " " & p_class of CURRENT_CLASS
+	else
+		set CLASS_ID_SHORT to p_subject_short of CURRENT_CLASS & " " & p_class of CURRENT_CLASS
+	end if
+	if PARAM_SHORT_FOLDER_NAME then
+		set CLASS_FOLDER to CLASS_ID_SHORT
+	else
+		set CLASS_FOLDER to CLASS_ID
+	end if
+	set CURRENT_CLASS_AND_YEAR to CLASS_ID & " · " & PARAM_YEAR
+	set CURRENT_CLASS_AND_SEMESTER_NAME to CLASS_ID & " · " & PARAM_SEMESTER_NAME
+	if p_subject_short of CURRENT_CLASS is equal to missing value then
+		set CURRENT_CLASS_AND_YEAR_SHORT to CLASS_ID & " · " & PARAM_YEAR
+		set CURRENT_CLASS_AND_SEMESTER_NAME_SHORT to CLASS_ID & " · " & PARAM_SEMESTER_NAME
+	else
+		set CURRENT_CLASS_AND_YEAR_SHORT to CLASS_ID_SHORT & " · " & PARAM_YEAR
+		set CURRENT_CLASS_AND_SEMESTER_NAME_SHORT to CLASS_ID_SHORT & " · " & PARAM_SEMESTER_NAME
+	end if
+	try
+		if PARAM_ADD_CLASS_TO_EXAM_PLAN or p_include_exam_grades of CURRENT_CLASS or p_include_final_grades of CURRENT_CLASS then
+			set EXAMS_TOTAL to (p_exams_in_first_semester of CURRENT_CLASS) + (p_exams_in_second_semester of CURRENT_CLASS) as integer
+		end if
+	on error errorMessage
+		tell me to error "Fehler beim Ermitteln der KA-Anzahl für „" & CLASS_ID & "“: " & errorMessage
+	end try
+	-- Info für Fortschrittsbalken setzen	
+	set progress additional description to "Klasse/Kurs „" & CLASS_ID & "“(" & PROGRESS_COUNT & " von " & length of CLASSES_LIST & ") wird angelegt."
+	-- Klasse anlegen
+	
+	-- ggf. Listenunterordner anlegen und befüllen
+	if DO_LISTS then
+		try
+			tell application "Finder"
+				set FOLDER_CLASS_LISTS to (make new folder in FOLDER_LISTS with properties {name:CLASS_FOLDER})
+			end tell
+		on error errorMessage
+			tell me to error "Fehler beim Anlegen des Listenordners für „" & CLASS_ID & "“: " & errorMessage
+		end try
+		-- Anzahl der Arbeiten in diesem Halbjahr feststellen und Nummerierung der Arbeiten festlegen
+		try
+			if PARAM_SEMESTER is equal to 1 then
+				set EXAMS_IN_SEMESTER to (p_exams_in_first_semester of CURRENT_CLASS as integer)
+				set EXAM_START_NUMBER to 0
+			else if PARAM_SEMESTER is equal to 2 then
+				set EXAMS_IN_SEMESTER to (p_exams_in_second_semester of CURRENT_CLASS as integer)
+				set EXAM_START_NUMBER to (p_exams_in_first_semester of CURRENT_CLASS as integer)
+			else
+				tell me to error "Unbekanntes Halbjahr „" & PARAM_SEMESTER & "“."
+			end if
+		on error errorMessage
+			tell me to error "Fehler beim Ermitteln der KA-Anzahl für „" & CLASS_ID & "“: " & errorMessage
+		end try
+		-- ggf. Klassenliste kopieren
+		if p_include_list of CURRENT_CLASS then
+			try
+				tell application "Finder"
+					set CURRENT_FILE to duplicate file "liste.numbers" of folder TEMPLATE_FOLDER to folder (FOLDER_CLASS_LISTS as alias)
+					tell application "Numbers Creator Studio"
+						open CURRENT_FILE
+						delay DEFAULT_DELAY
+						set the value of cell "A1" of table "Klasse/Kurs" of sheet "Liste" of document 1 to CURRENT_CLASS_AND_SEMESTER_NAME
+						tell document 1
+							if EXAMS_IN_SEMESTER is 0 then
+								delete sheet "HA-Liste (1 Arbeit)"
+								delete sheet "HA-Liste (2 Arbeiten)"
+							else if EXAMS_IN_SEMESTER is 1 then
+								delete sheet "HA-Liste (keine Arbeit)"
+								delete sheet "HA-Liste (2 Arbeiten)"
+							else if EXAMS_IN_SEMESTER is 2 then
+								delete sheet "HA-Liste (keine Arbeit)"
+								delete sheet "HA-Liste (1 Arbeit)"
+							end if
+						end tell
+						save document 1
+						close document 1
+					end tell
+					set name of CURRENT_FILE to "Liste " & CURRENT_CLASS_AND_SEMESTER_NAME_SHORT & ".numbers"
+				end tell
+			on error errorMessage
+				tell me to error "Fehler beim Kopieren der Klassenliste für „" & CLASS_ID & "“: " & errorMessage
+			end try
+		end if
+		-- Testen, ob Stufe gültigen Wert hat und dabei Namen für KA/Klausuren festlegen
+		if p_level of CURRENT_CLASS is equal to "sek1" then
+			set EXAM_NAME to sek1 of EXAM_NAMES
+		else if p_level of CURRENT_CLASS is equal to "sek2" then
+			set EXAM_NAME to sek2 of EXAM_NAMES
+		else
+			error "Unbekannte Stufe (" & p_level of CURRENT_CLASS & ")."
+		end if
+		-- ggf. KA-Dateien kopieren, Einleger hinzufügen und in Klausurplan eintragen
+		try
+			if EXAMS_IN_SEMESTER is not 0 then
+				repeat with i from 1 to EXAMS_IN_SEMESTER
+					set CURRENT_EXAM_NUMBER to EXAM_START_NUMBER + i as integer
+					-- KA-Dateien anlegen etc.
+					if p_include_exam_grades of CURRENT_CLASS then
+						tell application "Finder"
+							set CURRENT_FILE to duplicate file (p_level of CURRENT_CLASS & "_arbeit.numbers") of folder TEMPLATE_FOLDER to folder (FOLDER_CLASS_LISTS as alias)
+						end tell
+						tell application "Numbers Creator Studio"
+							open CURRENT_FILE
+							delay DEFAULT_DELAY
+							tell table "Überschrift" of sheet "Einstellungen und Lehrerstatistik" of document 1
+								set the value of cell "A1" to p_subject of CURRENT_CLASS
+								set the value of cell "B1" to p_class of CURRENT_CLASS
+							end tell
+							tell sheet "Formular 1" of document 1
+								if PARAM_NAME is not equal to missing value then
+									set the value of cell "B2" of table "Ergebnisspiegel schriftlicher Arbeiten" to PARAM_NAME
+									merge range "B2:D2" of table "Ergebnisspiegel schriftlicher Arbeiten"
+								end if
+								set the value of cell "H2" of table "Ergebnisspiegel schriftlicher Arbeiten" to CURRENT_EXAM_NUMBER
+								merge range "H2:J2" of table "Ergebnisspiegel schriftlicher Arbeiten"
+								if p_exam_duration of CURRENT_CLASS is not equal to missing value then
+									set the value of cell "K2" of table "Ergebnisspiegel schriftlicher Arbeiten" to p_exam_duration of CURRENT_CLASS
+									merge range "K2:M2" of table "Ergebnisspiegel schriftlicher Arbeiten"
+								end if
+							end tell
+							tell sheet "Formular 2" of document 1
+								set the value of cell "B1" of table "KA pro Schuljahr" to EXAMS_TOTAL
+								if EXAMS_TOTAL is equal to 1 then
+									if p_level of CURRENT_CLASS is equal to "sek1" then
+										set the value of cell "C1" of table "KA pro Schuljahr" to sek1 of EXAM_SINGULAR_TEXT
+									else if p_level of CURRENT_CLASS is equal to "sek2" then
+										set the value of cell "C1" of table "KA pro Schuljahr" to sek2 of EXAM_SINGULAR_TEXT
+									end if
+								end if
+							end tell
+							save document 1
+							close document 1
+						end tell
+						set name of CURRENT_FILE to EXAM_NAME & " " & CURRENT_EXAM_NUMBER & " " & CURRENT_CLASS_AND_SEMESTER_NAME_SHORT & ".numbers"
+					end if
+					-- ggf. Einleger hinzufügen
+					if p_include_exam_inlays of CURRENT_CLASS then
+						set INLAY_FILE_NAME to cleanFileName("einleger_" & CLASS_ID_SHORT & ".tex")
+						tell application "Finder"
+							set FOLDER_EXAM_INLAYS_NAME to EXAM_NAME & " " & CURRENT_EXAM_NUMBER & " " & CURRENT_CLASS_AND_SEMESTER_NAME_SHORT & " - Einleger"
+							set FOLDER_EXAM_INLAYS to (make new folder in folder (FOLDER_CLASS_LISTS as alias) with properties {name:FOLDER_EXAM_INLAYS_NAME})
+							set CURRENT_FILE to (duplicate file "scores.tex" of folder "ergebniseinleger" of folder TEMPLATE_FOLDER to folder (FOLDER_EXAM_INLAYS as alias))
+							set name of CURRENT_FILE to INLAY_FILE_NAME
+						end tell
+					end if
+					-- ggf. Klausur in Plan eintragen
+					if PARAM_INCLUDE_EXAMPLAN and PARAM_ADD_CLASS_TO_EXAM_PLAN then
+						tell application "Numbers Creator Studio"
+							open EXAMPLAN_FILE
+							delay DEFAULT_DELAY
+							tell table 1 of sheet "Plan" of document 1
+								set the value of cell 5 of row EXAM_PLAN_ROW to CLASS_ID
+								set the value of cell 6 of row EXAM_PLAN_ROW to CURRENT_EXAM_NUMBER
+								set the value of cell 8 of row EXAM_PLAN_ROW to EXAMS_TOTAL
+								set the value of cell 9 of row EXAM_PLAN_ROW to p_exam_duration of CURRENT_CLASS
+							end tell
+							save document 1
+							close document 1
+							set EXAM_PLAN_ROW to EXAM_PLAN_ROW + 1
+						end tell
+					end if
+				end repeat
+			end if
+		on error errorMessage
+			tell me to error "Fehler beim Kopieren der " & EXAM_NAME & "-Dateien oder Eintragen der Klausuren für „" & CLASS_ID & "“: " & errorMessage
+		end try
+		-- ggf. sMA-Datei kopieren
+		if p_include_inclass_grades of CURRENT_CLASS then
+			try
+				tell application "Finder"
+					set CURRENT_FILE to duplicate file (p_level of CURRENT_CLASS & "_sma.numbers") of folder TEMPLATE_FOLDER to folder (FOLDER_CLASS_LISTS as alias)
+					tell application "Numbers Creator Studio"
+						open CURRENT_FILE
+						delay DEFAULT_DELAY
+						set the value of cell "A1" of table "Überschrift" of sheet "Übersicht" of document 1 to CURRENT_CLASS_AND_SEMESTER_NAME
+						if p_best_score_from of CURRENT_CLASS is not equal to missing value then
+							set the value of cell "ab … Prozent beste Note" of table "Parameter für Notenberechnung" of sheet "Übersicht" of document 1 to p_best_score_from of CURRENT_CLASS
+						end if
+						if p_worse_score_from of CURRENT_CLASS is not equal to missing value then
+							set the value of cell "ab … Prozent ausreichende Note" of table "Parameter für Notenberechnung" of sheet "Übersicht" of document 1 to p_worse_score_from of CURRENT_CLASS
+						end if
+						save document 1
+						close document 1
+					end tell
+					set name of CURRENT_FILE to "sMA " & CURRENT_CLASS_AND_SEMESTER_NAME_SHORT & ".numbers"
+				end tell
+			on error errorMessage
+				tell me to error "Fehler beim Kopieren der sMA-Datei für „" & CLASS_ID & "“: " & errorMessage
+			end try
+		end if
+		-- ggf. Endnoten-Datei kopieren
+		if p_include_final_grades of CURRENT_CLASS then
+			try
+				tell application "Finder"
+					set CURRENT_FILE to duplicate file (p_level of CURRENT_CLASS & "_endnoten.numbers") of folder TEMPLATE_FOLDER to folder (FOLDER_CLASS_LISTS as alias)
+					tell application "Numbers Creator Studio"
+						open CURRENT_FILE
+						delay DEFAULT_DELAY
+						if p_is_single_semester in CURRENT_CLASS then
+							set SHEET_NAME to "epochal (1)"
+							tell document 1
+								delete sheet "2"
+								delete sheet "3 oder 4 (A)"
+								delete sheet "3 oder 4 (B)"
+								if p_exam_weight of CURRENT_CLASS is not equal to missing value then set the value of cell "B2" of table "Gewichtung der Leistungen" of sheet SHEET_NAME to p_exam_weight of CURRENT_CLASS
+							end tell
+						else if EXAMS_TOTAL is equal to 2 then
+							set SHEET_NAME to "2"
+							tell document 1
+								delete sheet "epochal (1)"
+								delete sheet "3 oder 4 (A)"
+								delete sheet "3 oder 4 (B)"
+								if p_exam_weight of CURRENT_CLASS is not equal to missing value then set the value of cell "B2" of table "Gewichtung der Leistungen" of sheet SHEET_NAME to p_exam_weight of CURRENT_CLASS
+							end tell
+						else if EXAMS_TOTAL is equal to 3 or EXAMS_TOTAL is equal to 4 then
+							tell document 1
+								delete sheet "epochal (1)"
+								delete sheet "2"
+								if p_exams_variant of CURRENT_CLASS is equal to "A" then
+									set SHEET_NAME to "3 oder 4 (A)"
+									delete sheet "3 oder 4 (B)"
+									delay DEFAULT_DELAY
+									if p_exam_weight of CURRENT_CLASS is not equal to missing value then set the value of cell "B2" of table "Gewichtung der Leistungen" of sheet SHEET_NAME to p_exam_weight of CURRENT_CLASS
+									if p_level of CURRENT_CLASS is equal to "sek1" then
+										set TABLE_NAME to "Gewichtung der Arbeiten"
+									else if p_level of CURRENT_CLASS is equal to "sek2" then
+										set TABLE_NAME to "Gewichtung der Klausuren"
+									end if
+									if p_first_exam_weight of CURRENT_CLASS is not equal to missing value then set the value of cell "B2" of table TABLE_NAME of sheet SHEET_NAME to p_first_exam_weight of CURRENT_CLASS
+								else if p_exams_variant of CURRENT_CLASS is equal to "B" then
+									set SHEET_NAME to "3 oder 4 (B)"
+									delete sheet "3 oder 4 (A)"
+									delay DEFAULT_DELAY
+									if p_first_exam_weight of CURRENT_CLASS is not equal to missing value then
+										if p_exams_in_first_semester of CURRENT_CLASS is equal to 2 then
+											set the value of cell "C3" of table "Gewichtung der Leistungen" of sheet SHEET_NAME to p_first_exam_weight of CURRENT_CLASS
+										else if p_exams_in_first_semester of CURRENT_CLASS is equal to 1 then
+											set the value of cell "B3" of table "Gewichtung der Leistungen" of sheet SHEET_NAME to p_first_exam_weight of CURRENT_CLASS
+											delete value of cell "B4" of table "Gewichtung der Leistungen" of sheet SHEET_NAME
+											merge range "B3:B4" of table "Gewichtung der Leistungen" of sheet SHEET_NAME
+											set the value of cell "C3" of table "Gewichtung der Leistungen" of sheet SHEET_NAME to "= B3 ÷ 2"
+										end if
+									end if
+								else
+									error "Unbekannte KA-Variante (" & p_exams_variant of CURRENT_CLASS & ")."
+								end if
+							end tell
+						end if
+						set name of table 1 of sheet 2 of document 1 to CURRENT_CLASS_AND_YEAR
+						set name of sheet 2 of document 1 to "Endnoten"
+						save document 1
+						close document 1
+					end tell
+					set name of CURRENT_FILE to "Endnoten " & CURRENT_CLASS_AND_YEAR_SHORT & ".numbers"
+				end tell
+			on error errorMessage
+				tell me to error "Fehler beim Kopieren der Endnoten-Datei für „" & CLASS_ID & "“: " & errorMessage
+			end try
+		end if
+	end if
+	-- ggf. Klassenunterordner anlegen und befüllen
+	if DO_CLASSES then
+		try
+			tell application "Finder"
+				set FOLDER_CLASS_FOLDER to (make new folder in FOLDER_CLASSES with properties {name:CLASS_FOLDER})
+			end tell
+		on error errorMessage
+			tell me to error "Fehler beim Anlegen des Klassenordners für „" & CLASS_ID & "“: " & errorMessage
+		end try
+		-- ggf. Grobplaner kopieren
+		if p_include_planner of CURRENT_CLASS then
+			tell application "Finder"
+				set CURRENT_FILE to duplicate file "grobplanung.numbers" of folder TEMPLATE_FOLDER to folder (FOLDER_CLASS_FOLDER as alias)
+			end tell
+			tell application "Numbers Creator Studio"
+				open CURRENT_FILE
+				delay DEFAULT_DELAY
+				set name of table 1 of sheet "Planer" of document 1 to CURRENT_CLASS_AND_SEMESTER_NAME
+				save document 1
+				close document 1
+			end tell
+			set name of CURRENT_FILE to " Planung " & CURRENT_CLASS_AND_SEMESTER_NAME_SHORT & ".numbers"
+		end if
+	end if
+	-- ggf. Notizen anlegen und befüllen
+	if DO_NOTES then
+		-- Präfix „ (ep)“ für epochale Fächer definieren
+		if p_is_single_semester in CURRENT_CLASS then
+			set SINGLE_SEMESTER to " (ep)"
+		else
+			set SINGLE_SEMESTER to ""
+		end if
+		-- Tag für die Notizen einer Klasse definieren
+		set CLASS_TAG to PARAM_SEMESTER_NAME & "/" & CLASS_ID & SINGLE_SEMESTER
+		-- wenn die Notizen in einen Unterodner gelegt werden sollen, muss dieser Erzeugt und der Zielpfad geändert werden
+		if PARAM_NOTES_IN_SUBFOLDER then
+			try
+				tell application "Finder"
+					set FOLDER_CLASS_NOTES to (make new folder in FOLDER_NOTES with properties {name:CLASS_FOLDER})
+					set FOLDER_NOTES_POSIX to the POSIX path of (FOLDER_CLASS_NOTES as alias)
+				end tell
+			on error errorMessage
+				tell me to error "Fehler beim Anlegen des Notizenunterordners für „" & CLASS_ID & "“: " & errorMessage
+			end try
+		end if
+		try
+			-- ggf. Themenplanung anlegen
+			if p_include_note_contents of CURRENT_CLASS then
+				do shell script "echo '# Themenplanung " & CLASS_ID_SHORT & "
+
+#" & CLASS_TAG & "#' > '" & FOLDER_NOTES_POSIX & "Themenplanung " & CLASS_ID_SHORT & ".md'"
+			end if
+			-- ggf. Übersicht anlegen
+			if p_include_note_overview of CURRENT_CLASS then
+				do shell script "echo '# Übersicht " & CLASS_ID_SHORT & "
+
+#" & CLASS_TAG & "#' > '" & FOLDER_NOTES_POSIX & "Übersicht " & CLASS_ID_SHORT & ".md'"
+			end if
+			-- ggf. Notiz für erste Sitzung anlegen
+			if p_include_note_first_session of CURRENT_CLASS then
+				do shell script "echo '# YYYY-MM-DD
+
+#" & CLASS_TAG & "#' > '" & FOLDER_NOTES_POSIX & "erste Sitzung " & CLASS_ID_SHORT & ".md'"
+			end if
+		on error errorMessage
+			tell me to error "Fehler beim Anlegen der Notizen für „" & CLASS_ID & "“: " & errorMessage
+		end try
+	end if
+	-- Fortschrittsbalken aktualisieren
+	set progress completed steps to PROGRESS_COUNT
+end repeat
+
+-- Nachricht zum Abschluss des Scriptes
+set END_TIME to (current date)
+if CLASSES_TOTAL is equal to 1 then
+	set CLASS_MESSAGE to "Dabei wurde 1 Klasse/Kurs angelegt"
+else
+	set CLASS_MESSAGE to "Dabei wurden " & CLASSES_TOTAL & " Klassen/Kurse angelegt"
+end if
+tell me to activate
+set result to (display dialog "Das Script wurde erflogreich ausgeführt. " & CLASS_MESSAGE & " (Dauer: " & TimeToText(END_TIME - START_TIME) & ")." & "
+
+Schönes Halbjahr!" buttons {"OK", "Ordner öffnen"} default button "OK" with title "Alles erledigt …")
+
+-- ggf. Ordner öffnen
+if button returned of result is equal to "Ordner öffnen" then
+	tell application "Finder"
+		activate
+		open folder TARGET_FOLDER
+	end tell
+end if
+
+-- Funktion, um Zeit in hh:mm:ss-String umzuwandeln
+-- Quelle: https://discussions.apple.com/thread/1452549
+on TimeToText(TheTime)
+	if (class of TheTime) as text is "integer" then
+		set TimeString to 1000000 + 10000 * (TheTime mod days div hours) -- hours
+		set TimeString to TimeString + 100 * (TheTime mod hours div minutes) -- minutes
+		set TimeString to (TimeString + (TheTime mod minutes)) as text -- seconds
+		tell TimeString to set TheTime to (text -6 thru -5) & ":" & (text -4 thru -3) & ":" & (text -2 thru -1)
+	end if
+	return TheTime
+end TimeToText
+
+-- Funktion, um gesäuberte Dateinamen für die TeX-Datei zu erhalten
+-- Quelle: https://developer.apple.com/library/archive/documentation/LanguagesUtilities/Conceptual/MacAutomationScriptingGuide/ManipulateText.html#//apple_ref/doc/uid/TP40016239-CH33-SW1
+on cleanFileName(TheText)
+	set TheComparisonCharacters to "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜäöüß: /\\"
+	set TheSourceCharacters to "abcdefghijklmnopqrstuvwxyzaouaous____"
+	set CleanedText to ""
+	repeat with CurrentCharacter in TheText
+		set TheOffset to offset of CurrentCharacter in TheComparisonCharacters
+		if TheOffset is not 0 then
+			set CleanedText to (CleanedText & character TheOffset of TheSourceCharacters) as string
+		else
+			set CleanedText to (CleanedText & CurrentCharacter) as string
+		end if
+	end repeat
+	return CleanedText
+end cleanFileName

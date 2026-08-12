@@ -70,6 +70,8 @@ Mit dieser Tabelle können als Unterstützung  bei der vergäbe von Punkten/BE d
 
 Apple-Script zum automatisierten Anlegen von Klassenordnern, Notenlisten und Notizdateien zur Unterrichtsplanung.
 
+*Um die Scripte, die von Apple Script nur als Binär-Datei gespeichert werden auch im Git tracken zu können, existieren zusätzlich die Dateien `xx_applescript.txt`, die 1:1 den Script-Inhalt zeigen. Binär- und Textdatei müssen _manuell_ synchron gehalten werden!*
+
 
 ### Script stundenplangenerator mit Tabelle stundenplangenerator_tabelle
 

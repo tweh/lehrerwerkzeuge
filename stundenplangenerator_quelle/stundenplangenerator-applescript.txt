@@ -1,0 +1,131 @@
+doScript() -- verhindert globale Variablen, um dauernde Sciherheitsanfragen zu unterbinden.
+-- vgl. https://www.macscripter.net/t/script-app-cant-access-reminders-app-without-permission/71057/4
+
+on doScript()
+	-- Variablen
+	set ENTRIES_LIST to {}
+	
+	-- Startdialog zeigen (Script kann hier ggf. abgebrochen werden)
+	display dialog "Das Script legt Kalendereinträge und Erinnerungen für einen Stundenplan an. Dazu müssen zunächst auch alle geöffneten Numbers Dokumente geschlossen werden. Während das Skript läuft, sollten Sie den Computer nicht benutzen.
+
+Eine detallierte Anleitung findet sich in der Stundenplangenerator-Tabelle (Numbers-Datei).
+Die Verwendung erfolgt auf eigene Gefahr!
+
+„OK“ klicken um das Skript zu starten." with title "Vorbereiter starten …"
+	
+	-- Speicherort des Scripts finden
+	tell application "Finder" to set SCRIPT_PATH to (container of (path to me)) as alias
+	
+	-- Numbers-Tabellen schließen
+	tell application "Numbers Creator Studio"
+		close every document
+	end tell
+	
+	tell me to activate
+	
+	-- Generator-Tabelle abfragen
+	set GENERATOR_TABLE_FILE to choose file of type "numbers" with prompt "Stundenplangenerator-Tabelle wählen." default location SCRIPT_PATH
+	
+	-- Generator-tabelle einlesen und Parameter abfragen
+	tell application "Numbers Creator Studio"
+		try
+			open GENERATOR_TABLE_FILE
+			tell document 1
+				-- Globale Variablen aus der Generator-Tabelle ziehen
+				tell table "Parameter" of sheet "Plangenerator"
+					set PARAM_ROOM_IN_NAME to value of cell "Wert Raum in Name" as boolean
+					set PARAM_MAKE_CALENDAR to value of cell "Wert Kalendereinträge erzeugen" as boolean
+					set PARAM_MAKE_REMINDER to value of cell "Wert Erinnerungen erzeugen" as boolean
+					set PARAM_LAST_SCHOOL_DAY to value of cell "Wert letzter Schultag für Skript" as string
+				end tell
+				-- Stundenplanliste einlesen
+				tell table "Stundenplangenerator" of sheet "Plangenerator"
+					repeat with i from 2 to row count
+						set VALUE_CLASS to value of cell i of column "F"
+						set VALUE_ROOM to value of cell i of column "G"
+						set VALUE_DATE_START to value of cell i of column "H"
+						set VALUE_DATE_END to value of cell i of column "I"
+						set ENTRIES_LIST to ENTRIES_LIST & {{p_date_start:VALUE_DATE_START, p_date_end:VALUE_DATE_END, p_class:VALUE_CLASS, p_room:VALUE_ROOM}}
+					end repeat
+				end tell
+				close
+			end tell
+		on error errorMessage
+			tell me to error "Bei der Generator-Tabelle ging etwas schief: " & errorMessage
+		end try
+	end tell
+	
+	-- Kalender für Einträge abfragen
+	if PARAM_MAKE_CALENDAR then
+		tell application "Calendar"
+			activate
+			set ALL_CALENDARS to name of every calendar
+			set CHOSEN_CALENDAR to (choose from list ALL_CALENDARS with prompt "Bitte Kalender auswählen." without empty selection allowed)
+			-- abbrechen, wenn keine Liste gewählt wurde
+			if CHOSEN_CALENDAR is false then return
+			set CHOSEN_CALENDAR to CHOSEN_CALENDAR as string
+		end tell
+	end if
+	
+	-- Liste für Erinnerungen abfragen
+	if PARAM_MAKE_REMINDER then
+		activate
+		tell application "Reminders"
+			set ALL_REMINDER_LISTS to name of every list
+			set CHOSEN_REMINDER_LIST to (choose from list ALL_REMINDER_LISTS with prompt "Bitte Erinnerungsliste auswählen.
+(Es werden nur Listen gezeigt, die nicht in einem Ordner sind.)" without empty selection allowed)
+			-- abbrechen, wenn keine Liste gewählt wurde
+			if CHOSEN_REMINDER_LIST is false then return
+			set CHOSEN_REMINDER_LIST to CHOSEN_REMINDER_LIST as string
+		end tell
+	end if
+	
+	-- Einträge anlegen
+	-- -- Fortschrittsanzeige vorbereiten
+	set ENTRIES_TOTAL to length of ENTRIES_LIST
+	set progress total steps to ENTRIES_TOTAL
+	set progress completed steps to 0
+	set progress description to "Termine anlegen …"
+	set progress additional description to "… wird vorbereitet."
+	set PROGRESS_COUNT to 0
+	-- -- über Einträge iterieren
+	repeat with CURRENT_ENTRY in ENTRIES_LIST
+		-- Zähler für Fortschrittsanzeige erhöhen
+		set PROGRESS_COUNT to PROGRESS_COUNT + 1
+		-- Info für Fortschrittsbalken setzen	
+		set progress additional description to "Eintrag für " & (p_class of CURRENT_ENTRY) & " wird verarbeitet."
+		if (p_class of CURRENT_ENTRY) is not equal to missing value then
+			-- ggf. Kalendereintrag erstellen
+			if PARAM_MAKE_CALENDAR then
+				if PARAM_ROOM_IN_NAME and (p_room of CURRENT_ENTRY) is not equal to missing value then
+					set EVENT_NAME to (p_class of CURRENT_ENTRY) & " [" & (p_room of CURRENT_ENTRY) & "]"
+				else
+					set EVENT_NAME to (p_class of CURRENT_ENTRY)
+				end if
+				if (p_room of CURRENT_ENTRY) is not equal to missing value and not PARAM_ROOM_IN_NAME then
+					set EVENT_LOCATION to (p_room of CURRENT_ENTRY)
+				else
+					set EVENT_LOCATION to ""
+				end if
+				tell application "Calendar"
+					-- Eintrag hinzufügen
+					tell calendar CHOSEN_CALENDAR
+						make new event with properties {summary:EVENT_NAME, start date:(p_date_start of CURRENT_ENTRY), end date:(p_date_end of CURRENT_ENTRY), location:EVENT_LOCATION, recurrence:"FREQ=WEEKLY;UNTIL=" & PARAM_LAST_SCHOOL_DAY}
+					end tell
+				end tell
+			end if
+			-- ggf. Erinnerung erstellen
+			if PARAM_MAKE_REMINDER then
+				tell application "Reminders"
+					-- Erinnerung hinzufügen
+					tell list CHOSEN_REMINDER_LIST
+						make new reminder at end with properties {name:(p_class of CURRENT_ENTRY), due date:(p_date_start of CURRENT_ENTRY)}
+					end tell
+				end tell
+			end if
+		end if
+		-- Fortschrittsbalken aktualisieren
+		set progress completed steps to PROGRESS_COUNT
+	end repeat
+	
+end doScript
