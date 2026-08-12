@@ -1,5 +1,5 @@
 -- Variablen
-global PARAM_NAME, PARAM_YEAR, PARAM_SEMESTER, PARAM_SEMESTER_NAME
+global PARAM_NAME, PARAM_YEAR, PARAM_SEMESTER, PARAM_SEMESTER_NAME, PARAM_EPOCHAL
 set START_TIME to (current date)
 set CLASSES_LIST to {}
 set HAS_CLASS_FILES_SOURCE to false
@@ -59,7 +59,16 @@ tell application "Numbers Creator Studio"
 				set PARAM_INCLUDE_LIST_GENERATOR to value of cell "Wert Stundenlistengenerator einschließen" as boolean
 				set PARAM_INCLUDE_PLAN_GENERATOR to value of cell "Wert Stundenplangenerator einschließen" as boolean
 				set PARAM_SHORT_FOLDER_NAME to value of cell "Wert Kürzel auch für Ordnernamen" as boolean
+				set PARAM_EPOCHAL to value of cell "Wert Epochalkennzeichner"
 			end tell
+			-- ggf. Notizenvorlagen einlesen (nur wenn überhaupt Notizen angelegt werden sollen)
+			if PARAM_FOLDER_NOTES is not equal to missing value then
+				tell sheet "Notizenvorlagen"
+					set NOTE_TEMPLATE_CONTENTS to value of cell "A1" of table "Themenplanung"
+					set NOTE_TEMPLATE_OVERVIEW to value of cell "A1" of table "Übersicht"
+					set NOTE_TEMPLATE_FIRST_SESSION to value of cell "A1" of table "erste Sitzung"
+				end tell
+			end if
 			-- Klassenliste einlesen
 			tell table "Liste der Klassen und Kurse" of sheet "Parameter und Liste"
 				repeat with i from 3 to row count
@@ -591,14 +600,6 @@ repeat with CURRENT_CLASS in CLASSES_LIST
 	end if
 	-- ggf. Notizen anlegen und befüllen
 	if DO_NOTES then
-		-- Präfix „ (ep)“ für epochale Fächer definieren
-		if p_is_single_semester in CURRENT_CLASS then
-			set SINGLE_SEMESTER to " (ep)"
-		else
-			set SINGLE_SEMESTER to ""
-		end if
-		-- Tag für die Notizen einer Klasse definieren
-		set CLASS_TAG to PARAM_SEMESTER_NAME & "/" & CLASS_ID & SINGLE_SEMESTER
 		-- wenn die Notizen in einen Unterodner gelegt werden sollen, muss dieser Erzeugt und der Zielpfad geändert werden
 		if PARAM_NOTES_IN_SUBFOLDER then
 			try
@@ -613,21 +614,15 @@ repeat with CURRENT_CLASS in CLASSES_LIST
 		try
 			-- ggf. Themenplanung anlegen
 			if p_include_note_contents of CURRENT_CLASS then
-				do shell script "echo '# Themenplanung " & CLASS_ID_SHORT & "
-
-#" & CLASS_TAG & "#' > '" & FOLDER_NOTES_POSIX & "Themenplanung " & CLASS_ID_SHORT & ".md'"
+				my writeTextToFile(my replacePlaceholders(NOTE_TEMPLATE_CONTENTS, CURRENT_CLASS), FOLDER_NOTES_POSIX & "Themenplanung " & CLASS_ID_SHORT & ".md")
 			end if
 			-- ggf. Übersicht anlegen
 			if p_include_note_overview of CURRENT_CLASS then
-				do shell script "echo '# Übersicht " & CLASS_ID_SHORT & "
-
-#" & CLASS_TAG & "#' > '" & FOLDER_NOTES_POSIX & "Übersicht " & CLASS_ID_SHORT & ".md'"
+				my writeTextToFile(my replacePlaceholders(NOTE_TEMPLATE_OVERVIEW, CURRENT_CLASS), FOLDER_NOTES_POSIX & "Übersicht " & CLASS_ID_SHORT & ".md")
 			end if
 			-- ggf. Notiz für erste Sitzung anlegen
 			if p_include_note_first_session of CURRENT_CLASS then
-				do shell script "echo '# YYYY-MM-DD
-
-#" & CLASS_TAG & "#' > '" & FOLDER_NOTES_POSIX & "erste Sitzung " & CLASS_ID_SHORT & ".md'"
+				my writeTextToFile(my replacePlaceholders(NOTE_TEMPLATE_FIRST_SESSION, CURRENT_CLASS), FOLDER_NOTES_POSIX & "erste Sitzung " & CLASS_ID_SHORT & ".md")
 			end if
 		on error errorMessage
 			tell me to error "Fehler beim Anlegen der Notizen für „" & CLASS_ID & "“: " & errorMessage
@@ -718,20 +713,50 @@ on replaceText(SourceText, SearchString, ReplacementString)
 	return SourceText
 end replaceText
 
--- Funktion, um die Platzhalter in einem Dateinamentemplate (Spalte Y) durch die Werte einer Klasse zu ersetzen
+-- Funktion, um die Platzhalter in einem Dateinamentemplate (Spalte Y/AA) oder einem Notiztemplate durch die Werte einer Klasse zu ersetzen
 on replacePlaceholders(TheText, TheClass)
-	global PARAM_NAME, PARAM_YEAR, PARAM_SEMESTER, PARAM_SEMESTER_NAME
+	global PARAM_NAME, PARAM_YEAR, PARAM_SEMESTER, PARAM_SEMESTER_NAME, PARAM_EPOCHAL
 	set SUBJECT_SHORT to p_subject_short of TheClass
 	if SUBJECT_SHORT is equal to missing value then set SUBJECT_SHORT to p_subject of TheClass
-	set TheText to my replaceText(TheText, "{{Fach}}", my textOrEmpty(p_subject of TheClass))
-	set TheText to my replaceText(TheText, "{{Kuerzel}}", my textOrEmpty(SUBJECT_SHORT))
-	set TheText to my replaceText(TheText, "{{Klasse}}", my textOrEmpty(p_class of TheClass))
-	set TheText to my replaceText(TheText, "{{SJ}}", my textOrEmpty(PARAM_YEAR))
-	set TheText to my replaceText(TheText, "{{HJ}}", my textOrEmpty(PARAM_SEMESTER))
-	set TheText to my replaceText(TheText, "{{HJBez}}", my textOrEmpty(PARAM_SEMESTER_NAME))
-	set TheText to my replaceText(TheText, "{{Name}}", my textOrEmpty(PARAM_NAME))
+	set TheText to my replaceText(TheText, "{{Fach}}", my trimText(my textOrEmpty(p_subject of TheClass)))
+	set TheText to my replaceText(TheText, "{{Kuerzel}}", my trimText(my textOrEmpty(SUBJECT_SHORT)))
+	set TheText to my replaceText(TheText, "{{Klasse}}", my trimText(my textOrEmpty(p_class of TheClass)))
+	set TheText to my replaceText(TheText, "{{SJ}}", my trimText(my textOrEmpty(PARAM_YEAR)))
+	set TheText to my replaceText(TheText, "{{HJ}}", my trimText(my textOrEmpty(PARAM_SEMESTER)))
+	set TheText to my replaceText(TheText, "{{HJBez}}", my trimText(my textOrEmpty(PARAM_SEMESTER_NAME)))
+	set TheText to my replaceText(TheText, "{{Name}}", my trimText(my textOrEmpty(PARAM_NAME)))
+	if p_is_single_semester of TheClass then
+		set TheText to my replaceText(TheText, "{{epochal}}", my trimText(my textOrEmpty(PARAM_EPOCHAL)))
+	else
+		set TheText to my replaceText(TheText, "{{epochal}}", "")
+	end if
 	return TheText
 end replacePlaceholders
+
+-- Funktion, um führende/folgende Leerzeichen und Tabs aus einem Text zu entfernen (z. B. versehentliche Leerzeichen in Tabellenzellen)
+on trimText(TheText)
+	if TheText is "" then return TheText
+	repeat while TheText is not "" and (TheText begins with " " or TheText begins with tab)
+		set TheText to text 2 thru -1 of TheText
+	end repeat
+	repeat while TheText is not "" and (TheText ends with " " or TheText ends with tab)
+		set TheText to text 1 thru -2 of TheText
+	end repeat
+	return TheText
+end trimText
+
+-- Funktion, um einen Text unverändert (inkl. aller Leerzeichen/Umbrüche) in eine Datei zu schreiben
+on writeTextToFile(TheText, ThePosixPath)
+	set TheFile to open for access POSIX file ThePosixPath with write permission
+	try
+		set eof of TheFile to 0
+		write TheText to TheFile as «class utf8»
+		close access TheFile
+	on error errorMessage
+		close access TheFile
+		error errorMessage
+	end try
+end writeTextToFile
 
 -- Funktion, um missing value zu einem leeren String zu machen (sonst string-Konvertierung/Verkettung)
 on textOrEmpty(TheValue)

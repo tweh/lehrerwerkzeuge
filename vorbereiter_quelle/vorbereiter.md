@@ -30,7 +30,6 @@ Diese Variablen werden im Verlauf des Scripts definiert.
 - `CLASS_ID_SHORT`: `CLASS_ID` mit Fachkürzel
 - `CLASS_ID`: (eindeutiger) Bezeichner für die Klasse, der aus dem Fach und dem Klassennamen gebildet wird
 - `CLASS_MESSAGE`: Text für Abschlussmeldung, wie viele Klassen angelegt wurden
-- `CLASS_TAG`: String mit dem Tag für eine Klasse für die Notizen
 - `CLASSES_TOTAL`: Gesamtzahl der Klassen in `CLASSES_LIST` 
 - `CURRENT_CLASS_AND_SEMESTER_NAME_SHORT`: `CURRENT_CLASS_AND_SEMESTER_NAME` mit Fachkürzel
 - `CURRENT_CLASS_AND_SEMESTER_NAME`: Kombination aus Klassen- und Halbjahresbezeichner für Überschriften, Dateinamen etc.
@@ -64,12 +63,14 @@ Diese Variablen werden im Verlauf des Scripts definiert.
 - `FOLDER_NOTES`: Verweis auf den Ordner für die Notizen(ordner)
 - `GENERATOR_FILE`: Verweis auf die Stundenlistengeneratordatei 
 - `INLAY_FILE_NAME`: Name für die Ergebniseinlegerdatei
+- `NOTE_TEMPLATE_CONTENTS`: Text des Notiztemplates „Themenplanung“ (aus Tabellenblatt „Notizenvorlagen“)
+- `NOTE_TEMPLATE_FIRST_SESSION`: Text des Notiztemplates „erste Sitzung“ (aus Tabellenblatt „Notizenvorlagen“)
+- `NOTE_TEMPLATE_OVERVIEW`: Text des Notiztemplates „Übersicht“ (aus Tabellenblatt „Notizenvorlagen“)
 - `POINTTABLE_FILE`: Verweis auf die Punktetabellendatei
 - `PREPERATOR_TABLE_FILE`: Verweis auf die Tabelle `vorbereiter_tabelle` (Dateiname kann abweichen)
 - `PROGRESS_COUNT`: Laufvariable für die Fortschrittsanzeige 
 - `SCRIPT_PATH`: Speicherort des Scriptes
 - `SHEET_NAME`: temporäre Variable für die Blattbezeichnung in der Endnotendatei
-- `SINGLE_SEMESTER`: optionaler Suffix für epochale Fächer
 - `SOURCE_FILE_NAME`: Laufvariable mit dem Namen der gerade zu kopierenden Vorlagendatei (aus `p_class_files_source` bzw. `p_extra_files_source`)
 - `TABLE_NAME`: temporäre Variable für die Tabellenbezeichnung bei der Gewichtung in der Endnotendatei
 - `TARGET_FILE_NAME`: Laufvariable mit dem (nach Ersetzung der Platzhalter) gewünschten Zieldateinamen (aus `p_class_files_target` bzw. `p_extra_files_target`)
@@ -83,6 +84,7 @@ Diese Variablen werden aus der Numbers-Datei ausgelesen.
 (in alphabetischer Reihenfolge)
 
 - `PARAM_ADD_CLASS_TO_EXAM_PLAN` *(bool)*: Klassen in Klausurplan eintragen
+- `PARAM_EPOCHAL`: Wert des Platzhalters `{{epochal}}` (aus Zelle „Wert Epochalkennzeichner“), wird nur bei epochalen Fächern eingesetzt (s. `p_is_single_semester`)
 - `PARAM_FILES_IN_SUBFOLDERS` *(bool)*: Dateien in Klassenunterordner ablegen
 - `PARAM_FOLDER_CLASSES`: Name für den Ordner mit den Klassenordnern
 - `PARAM_FOLDER_FILES`: Name für den Ordner mit den zusätzlichen Dateien
@@ -151,7 +153,7 @@ Da eine Zelle sowohl mehrere Zeilen als auch mehrere durch Leerzeichen getrennte
 
 Zwischen einem `>>` und dem nächsten `<<` dürfen beliebig viele Leerzeichen oder Zeilenumbrüche stehen (auch keiner). Die Funktion `extractMaskedTokens` extrahiert daraus die Liste der einzelnen Werte (`p_class_files_source`/`p_class_files_target` bzw. `p_extra_files_source`/`p_extra_files_target`). Die Reihenfolge der Werte muss innerhalb eines Spaltenpaars übereinstimmen (Datei *n* aus `X`/`Z` wird zu Dateiname *n* aus `Y`/`AA` umbenannt); haben die beiden Spalten eines Paars für eine Zeile eine unterschiedliche Anzahl an Werten, bricht das Script mit einer Fehlermeldung ab. Einzelne Werte dürfen leer sein (`<<>>`), in dem Fall wird für diese Position keine Datei kopiert.
 
-In den Dateinamentemplates aus Spalte `Y`/`AA` können folgende Platzhalter verwendet werden, die durch `replacePlaceholders` ersetzt werden:
+In den Dateinamentemplates aus Spalte `Y`/`AA` können folgende Platzhalter verwendet werden, die durch `replacePlaceholders` ersetzt werden (dieselben Platzhalter stehen auch in den Notiztemplates zur Verfügung, s. u.):
 
 - `{{Fach}}` → `p_subject` (Spalte B)
 - `{{Kuerzel}}` → `p_subject_short` (Spalte C; falls leer, wird ersatzweise `p_subject` verwendet)
@@ -160,6 +162,19 @@ In den Dateinamentemplates aus Spalte `Y`/`AA` können folgende Platzhalter verw
 - `{{HJ}}` → `PARAM_SEMESTER`
 - `{{HJBez}}` → `PARAM_SEMESTER_NAME`
 - `{{Name}}` → `PARAM_NAME`
+- `{{epochal}}` → `PARAM_EPOCHAL`, aber nur wenn die Klasse epochal ist (`p_is_single_semester` = wahr, Spalte F); sonst leerer String
+
+Alle eingesetzten Werte werden vor dem Einsetzen mit `trimText` von führenden/folgenden Leerzeichen befreit (schützt vor unbeabsichtigten Leerzeichen in den Tabellenzellen, z. B. in Spalte D „Klasse“, die sonst 1:1 in Dateinamen und Notizen landen würden).
+
+### Tabellenblatt „Notizenvorlagen“ (Notiztemplates)
+
+Die Inhalte der Notizdateien (s. `p_include_note_contents`, `p_include_note_overview`, `p_include_note_first_session`) werden nicht mehr fest im Script vorgegeben, sondern aus dem Tabellenblatt „Notizenvorlagen“ der Vorbereiter-Tabelle gelesen. Dort liegt für jede der drei Notizarten eine eigene Tabelle mit genau einer Zelle (`A1`):
+
+- Tabelle „Themenplanung“ → `NOTE_TEMPLATE_CONTENTS`
+- Tabelle „Übersicht“ → `NOTE_TEMPLATE_OVERVIEW`
+- Tabelle „erste Sitzung“ → `NOTE_TEMPLATE_FIRST_SESSION`
+
+Diese drei Templates werden einmalig beim Einlesen der Vorbereiter-Tabelle geladen, sofern überhaupt Notizen angelegt werden sollen (`PARAM_FOLDER_NOTES` gesetzt). Pro Klasse wird der jeweilige Templatetext unverändert (inkl. aller Leerzeichen und Zeilenumbrüche) mit `replacePlaceholders` durch die Werte der Klasse ersetzt und anschließend mit `writeTextToFile` 1:1 in die Notizdatei geschrieben (Ersatz für das frühere Erzeugen des Inhalts per `do shell script "echo …"`, das bei Sonderzeichen wie `'` oder `"` in der Vorlage fehlerträchtig gewesen wäre).
 
 ## im Script definierte Funktionen
 
@@ -167,7 +182,9 @@ In den Dateinamentemplates aus Spalte `Y`/`AA` können folgende Platzhalter verw
 
 - `cleanFileName(Text)`: Wandelt einen String in einen „sauberen“ Dateinamen um
 - `extractMaskedTokens(Text)`: Extrahiert aus einem mit `<<...>>` maskierten Zellentext die Liste der einzelnen Werte (s. Spalten „X“/„Y“ und „Z“/„AA“)
-- `replacePlaceholders(Text, Klasse)`: Ersetzt in einem Dateinamentemplate (Spalte Y bzw. AA) die Platzhalter durch die Werte der übergebenen Klasse (record `CURRENT_CLASS`). Greift auf `PARAM_NAME`, `PARAM_YEAR`, `PARAM_SEMESTER` und `PARAM_SEMESTER_NAME` zu; da Handler in AppleScript keinen automatischen Zugriff auf die Top-Level-Variablen des Scripts haben, sind diese vier Variablen sowohl am Scriptanfang als auch im Handler selbst per `global`-Deklaration eingebunden (sonst Fehler „… not defined“ beim Aufruf).
+- `replacePlaceholders(Text, Klasse)`: Ersetzt in einem Dateinamentemplate (Spalte Y bzw. AA) oder einem Notiztemplate (Tabellenblatt „Notizenvorlagen“) die Platzhalter durch die Werte der übergebenen Klasse (record `CURRENT_CLASS`). Greift auf `PARAM_NAME`, `PARAM_YEAR`, `PARAM_SEMESTER`, `PARAM_SEMESTER_NAME` und `PARAM_EPOCHAL` zu; da Handler in AppleScript keinen automatischen Zugriff auf die Top-Level-Variablen des Scripts haben, sind diese fünf Variablen sowohl am Scriptanfang als auch im Handler selbst per `global`-Deklaration eingebunden (sonst Fehler „… not defined“ beim Aufruf).
 - `replaceText(Text, Suchstring, Ersetzung)`: Ersetzt alle Vorkommen von `Suchstring` in `Text` durch `Ersetzung`
 - `textOrEmpty(Wert)`: Wandelt `missing value` in einen leeren String um, sonst `Wert as string`
 - `TimeToText(Zeit)`: Wandelt eine Zeitangabe in die Form `hh:mm:ss` um
+- `trimText(Text)`: Entfernt führende und folgende Leerzeichen/Tabs aus `Text` (wird in `replacePlaceholders` auf alle eingesetzten Werte angewendet)
+- `writeTextToFile(Text, PosixPfad)`: Schreibt `Text` unverändert (inkl. aller Leerzeichen/Umbrüche, als UTF-8) in die Datei unter `PosixPfad`; nutzt AppleScripts eigene Datei-I/O (`open for access`/`write`/`close access`) statt eines Shell-Aufrufs, damit Sonderzeichen in den Notiztemplates nicht zu Shell-Escaping-Problemen führen
