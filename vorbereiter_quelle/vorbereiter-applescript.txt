@@ -1,9 +1,6 @@
 -- Variablen
-global PARAM_NAME, PARAM_YEAR, PARAM_SEMESTER, PARAM_SEMESTER_NAME
 set START_TIME to (current date)
 set CLASSES_LIST to {}
-set HAS_CLASS_FILES_SOURCE to false
-set HAS_EXTRA_FILES_SOURCE to false
 set EXAM_NAMES to {sek1:"KA", sek2:"Klausur"}
 set EXAM_SINGULAR_TEXT to {sek1:"Arbeit im Schuljahr", sek2:"Klausur im Schuljahr"}
 set DEFAULT_DELAY to 2 -- Sekunden
@@ -49,9 +46,7 @@ tell application "Numbers Creator Studio"
 				set PARAM_FOLDER_LISTS to value of cell "Wert Unterordner für Notenlisten etc."
 				set PARAM_FOLDER_CLASSES to value of cell "Wert Unterordner für Klassenordner"
 				set PARAM_FOLDER_NOTES to value of cell "Wert Unterordner für Notizen"
-				set PARAM_FOLDER_FILES to value of cell "Wert Unterordner für Dateien"
 				set PARAM_NOTES_IN_SUBFOLDER to value of cell "Wert Notizen in Klassenunterordner" as boolean
-				set PARAM_FILES_IN_SUBFOLDERS to value of cell "Wert Dateien in Klassenunterordner" as boolean
 				set PARAM_INCLUDE_CALENDAR to value of cell "Wert Kalender einschließen" as boolean
 				set PARAM_INCLUDE_EXAMPLAN to value of cell "Wert Klausurplan einschließen" as boolean
 				set PARAM_ADD_CLASS_TO_EXAM_PLAN to value of cell "Wert Klassen in Klausurplan eintragen" as boolean
@@ -86,24 +81,8 @@ tell application "Numbers Creator Studio"
 					set VALUE_INCLUDE_NOTE_CONTENTS to value of cell i of column "U" as boolean
 					set VALUE_INCLUDE_NOTE_OVERVIEW to value of cell i of column "V" as boolean
 					set VALUE_INCLUDE_NOTE_FIRST_SESSION to value of cell i of column "W" as boolean
-					set VALUE_CLASS_FILES_SOURCE to value of cell i of column "X"
-					set VALUE_CLASS_FILES_TARGET to value of cell i of column "Y"
-					set VALUE_EXTRA_FILES_SOURCE to value of cell i of column "Z"
-					set VALUE_EXTRA_FILES_TARGET to value of cell i of column "AA"
 					if (not VALUE_IGNORE and VALUE_SUBJECT is not equal to missing value) and (VALUE_CLASS is not equal to missing value) and (VALUE_LEVEL is not equal to "?") then
-						set VALUE_CLASS_FILES_SOURCE_LIST to my extractMaskedTokens(VALUE_CLASS_FILES_SOURCE)
-						set VALUE_CLASS_FILES_TARGET_LIST to my extractMaskedTokens(VALUE_CLASS_FILES_TARGET)
-						if (count of VALUE_CLASS_FILES_SOURCE_LIST) is not equal to (count of VALUE_CLASS_FILES_TARGET_LIST) then
-							tell me to error "Unterschiedliche Anzahl an Dateien in Spalte X (" & (count of VALUE_CLASS_FILES_SOURCE_LIST) & ") und Y (" & (count of VALUE_CLASS_FILES_TARGET_LIST) & ") für „" & VALUE_SUBJECT & " " & VALUE_CLASS & "“."
-						end if
-						set VALUE_EXTRA_FILES_SOURCE_LIST to my extractMaskedTokens(VALUE_EXTRA_FILES_SOURCE)
-						set VALUE_EXTRA_FILES_TARGET_LIST to my extractMaskedTokens(VALUE_EXTRA_FILES_TARGET)
-						if (count of VALUE_EXTRA_FILES_SOURCE_LIST) is not equal to (count of VALUE_EXTRA_FILES_TARGET_LIST) then
-							tell me to error "Unterschiedliche Anzahl an Dateien in Spalte Z (" & (count of VALUE_EXTRA_FILES_SOURCE_LIST) & ") und AA (" & (count of VALUE_EXTRA_FILES_TARGET_LIST) & ") für „" & VALUE_SUBJECT & " " & VALUE_CLASS & "“."
-						end if
-						if (count of VALUE_CLASS_FILES_SOURCE_LIST) > 0 then set HAS_CLASS_FILES_SOURCE to true
-						if (count of VALUE_EXTRA_FILES_SOURCE_LIST) > 0 then set HAS_EXTRA_FILES_SOURCE to true
-						set CLASSES_LIST to CLASSES_LIST & {{p_subject:VALUE_SUBJECT, p_subject_short:VALUE_SUBJECT_SHORT, p_class:VALUE_CLASS, p_level:VALUE_LEVEL, p_is_single_semester:VALUE_IS_SINGLE_SEMESTER, p_exams_in_first_semester:VALUE_EXAMS_IN_FIRST_SEMESTER, p_exams_in_second_semester:VALUE_EXAMS_IN_SECOND_SEMESTER, p_exams_variant:VALUE_EXAMS_VARIANT, p_exam_weight:VALUE_EXAM_WEIGHT, p_first_exam_weight:VALUE_FIRST_EXAM_WEIGHT, p_exam_duration:VALUE_EXAM_DURATION, p_best_score_from:VALUE_BEST_SCORE_FROM, p_worse_score_from:VALUE_WORSE_SCORE_FROM, p_include_list:VALUE_INCLUDE_LIST, p_include_exam_grades:VALUE_INCLUDE_EXAM_GRADES, p_include_exam_inlays:VALUE_INCLUDE_EXAM_INLAYS, p_include_inclass_grades:VALUE_INCLUDE_INCLASS_GRADES, p_include_final_grades:VALUE_INCLUDE_FINAL_GRADES, p_include_planner:VALUE_INCLUDE_PLANNER, p_include_note_contents:VALUE_INCLUDE_NOTE_CONTENTS, p_include_note_overview:VALUE_INCLUDE_NOTE_OVERVIEW, p_include_note_first_session:VALUE_INCLUDE_NOTE_FIRST_SESSION, p_class_files_source:VALUE_CLASS_FILES_SOURCE_LIST, p_class_files_target:VALUE_CLASS_FILES_TARGET_LIST, p_extra_files_source:VALUE_EXTRA_FILES_SOURCE_LIST, p_extra_files_target:VALUE_EXTRA_FILES_TARGET_LIST}}
+						set CLASSES_LIST to CLASSES_LIST & {{p_subject:VALUE_SUBJECT, p_subject_short:VALUE_SUBJECT_SHORT, p_class:VALUE_CLASS, p_level:VALUE_LEVEL, p_is_single_semester:VALUE_IS_SINGLE_SEMESTER, p_exams_in_first_semester:VALUE_EXAMS_IN_FIRST_SEMESTER, p_exams_in_second_semester:VALUE_EXAMS_IN_SECOND_SEMESTER, p_exams_variant:VALUE_EXAMS_VARIANT, p_exam_weight:VALUE_EXAM_WEIGHT, p_first_exam_weight:VALUE_FIRST_EXAM_WEIGHT, p_exam_duration:VALUE_EXAM_DURATION, p_best_score_from:VALUE_BEST_SCORE_FROM, p_worse_score_from:VALUE_WORSE_SCORE_FROM, p_include_list:VALUE_INCLUDE_LIST, p_include_exam_grades:VALUE_INCLUDE_EXAM_GRADES, p_include_exam_inlays:VALUE_INCLUDE_EXAM_INLAYS, p_include_inclass_grades:VALUE_INCLUDE_INCLASS_GRADES, p_include_final_grades:VALUE_INCLUDE_FINAL_GRADES, p_include_planner:VALUE_INCLUDE_PLANNER, p_include_note_contents:VALUE_INCLUDE_NOTE_CONTENTS, p_include_note_overview:VALUE_INCLUDE_NOTE_OVERVIEW, p_include_note_first_session:VALUE_INCLUDE_NOTE_FIRST_SESSION}}
 					else if (VALUE_SUBJECT is not equal to missing value) and (VALUE_LEVEL is equal to "?") then
 						display dialog "Stufe für " & VALUE_SUBJECT & " " & VALUE_CLASS & " fehlt. Klasse/Kurs wird übersprungen."
 					end if
@@ -119,12 +98,6 @@ end tell
 set DO_LISTS to (PARAM_FOLDER_LISTS is not equal to missing value) as boolean
 set DO_CLASSES to (PARAM_FOLDER_CLASSES is not equal to missing value) as boolean
 set DO_NOTES to (PARAM_FOLDER_NOTES is not equal to missing value) as boolean
-set DO_FILES to (PARAM_FOLDER_FILES is not equal to missing value) as boolean
-
--- ggf. Ordner mit Dateivorlagen abfragen (für Dateien aus Spalte X/Y und/oder Z/AA), aber nur wenn es dafür auch Einträge gibt
-if (DO_CLASSES and HAS_CLASS_FILES_SOURCE) or (DO_FILES and HAS_EXTRA_FILES_SOURCE) then
-	set TEMPLATE_FILES_FOLDER to choose folder with prompt "Ordner mit Dateivorlagen wählen." default location SCRIPT_PATH
-end if
 
 -- Ordner anlegen, wenn gewünscht
 tell application "Finder"
@@ -140,13 +113,6 @@ tell application "Finder"
 			set FOLDER_CLASSES to (make new folder in folder TARGET_FOLDER with properties {name:PARAM_FOLDER_CLASSES})
 		on error errorMessage
 			tell me to error "Fehler beim Anlegen des Klassenordners: " & errorMessage
-		end try
-	end if
-	if DO_FILES then
-		try
-			set FOLDER_FILES to (make new folder in folder TARGET_FOLDER with properties {name:PARAM_FOLDER_FILES})
-		on error errorMessage
-			tell me to error "Fehler beim Anlegen des Dateienordners: " & errorMessage
 		end try
 	end if
 	if DO_NOTES then
@@ -541,53 +507,6 @@ repeat with CURRENT_CLASS in CLASSES_LIST
 			end tell
 			set name of CURRENT_FILE to " Planung " & CURRENT_CLASS_AND_SEMESTER_NAME_SHORT & ".numbers"
 		end if
-		-- ggf. Dateien aus Spalte X/Y in den Klassenordner kopieren und gemäß Spalte Y umbenennen
-		try
-			repeat with j from 1 to count of p_class_files_source of CURRENT_CLASS
-				set SOURCE_FILE_NAME to item j of p_class_files_source of CURRENT_CLASS
-				set TARGET_FILE_NAME to item j of p_class_files_target of CURRENT_CLASS
-				if SOURCE_FILE_NAME is not "" and TARGET_FILE_NAME is not "" then
-					set TARGET_FILE_NAME to my replacePlaceholders(TARGET_FILE_NAME, CURRENT_CLASS)
-					tell application "Finder"
-						set CURRENT_FILE to duplicate file SOURCE_FILE_NAME of folder TEMPLATE_FILES_FOLDER to folder (FOLDER_CLASS_FOLDER as alias)
-						set name of CURRENT_FILE to TARGET_FILE_NAME
-					end tell
-				end if
-			end repeat
-		on error errorMessage
-			tell me to error "Fehler beim Kopieren der Dateien für „" & CLASS_ID & "“: " & errorMessage
-		end try
-	end if
-	-- ggf. zusätzliche Dateien aus Spalte Z/AA in den Dateienordner kopieren und umbenennen
-	if DO_FILES then
-		-- Zielordner für die Dateien dieser Klasse bestimmen
-		if PARAM_FILES_IN_SUBFOLDERS then
-			try
-				tell application "Finder"
-					set FOLDER_CLASS_FILES to (make new folder in FOLDER_FILES with properties {name:CLASS_FOLDER})
-				end tell
-			on error errorMessage
-				tell me to error "Fehler beim Anlegen des Dateienunterordners für „" & CLASS_ID & "“: " & errorMessage
-			end try
-		else
-			set FOLDER_CLASS_FILES to FOLDER_FILES
-		end if
-		-- Dateien kopieren und gemäß Spalte AA umbenennen
-		try
-			repeat with j from 1 to count of p_extra_files_source of CURRENT_CLASS
-				set SOURCE_FILE_NAME to item j of p_extra_files_source of CURRENT_CLASS
-				set TARGET_FILE_NAME to item j of p_extra_files_target of CURRENT_CLASS
-				if SOURCE_FILE_NAME is not "" and TARGET_FILE_NAME is not "" then
-					set TARGET_FILE_NAME to my replacePlaceholders(TARGET_FILE_NAME, CURRENT_CLASS)
-					tell application "Finder"
-						set CURRENT_FILE to duplicate file SOURCE_FILE_NAME of folder TEMPLATE_FILES_FOLDER to folder (FOLDER_CLASS_FILES as alias)
-						set name of CURRENT_FILE to TARGET_FILE_NAME
-					end tell
-				end if
-			end repeat
-		on error errorMessage
-			tell me to error "Fehler beim Kopieren der zusätzlichen Dateien für „" & CLASS_ID & "“: " & errorMessage
-		end try
 	end if
 	-- ggf. Notizen anlegen und befüllen
 	if DO_NOTES then
@@ -685,59 +604,3 @@ on cleanFileName(TheText)
 	end repeat
 	return CleanedText
 end cleanFileName
-
--- Funktion, um aus einer mit <<...>> maskierten Zellenliste die einzelnen Werte zu extrahieren
-on extractMaskedTokens(TheText)
-	set TokenList to {}
-	if TheText is missing value then return TokenList
-	if TheText is "" then return TokenList
-	set OldDelimiters to AppleScript's text item delimiters
-	set AppleScript's text item delimiters to "<<"
-	set OpenParts to text items of TheText
-	set AppleScript's text item delimiters to OldDelimiters
-	if (count of OpenParts) < 2 then return TokenList
-	repeat with i from 2 to count of OpenParts
-		set CurrentPart to item i of OpenParts
-		set AppleScript's text item delimiters to ">>"
-		set CloseParts to text items of CurrentPart
-		set AppleScript's text item delimiters to OldDelimiters
-		set TokenList to TokenList & {item 1 of CloseParts}
-	end repeat
-	return TokenList
-end extractMaskedTokens
-
--- Funktion, um alle Vorkommen von SearchString in SourceText durch ReplacementString zu ersetzen
-on replaceText(SourceText, SearchString, ReplacementString)
-	if SourceText does not contain SearchString then return SourceText
-	set OldDelimiters to AppleScript's text item delimiters
-	set AppleScript's text item delimiters to SearchString
-	set TheItems to text items of SourceText
-	set AppleScript's text item delimiters to ReplacementString
-	set SourceText to TheItems as string
-	set AppleScript's text item delimiters to OldDelimiters
-	return SourceText
-end replaceText
-
--- Funktion, um die Platzhalter in einem Dateinamentemplate (Spalte Y) durch die Werte einer Klasse zu ersetzen
-on replacePlaceholders(TheText, TheClass)
-	global PARAM_NAME, PARAM_YEAR, PARAM_SEMESTER, PARAM_SEMESTER_NAME
-	set SUBJECT_SHORT to p_subject_short of TheClass
-	if SUBJECT_SHORT is equal to missing value then set SUBJECT_SHORT to p_subject of TheClass
-	set TheText to my replaceText(TheText, "{{Fach}}", my textOrEmpty(p_subject of TheClass))
-	set TheText to my replaceText(TheText, "{{Kuerzel}}", my textOrEmpty(SUBJECT_SHORT))
-	set TheText to my replaceText(TheText, "{{Klasse}}", my textOrEmpty(p_class of TheClass))
-	set TheText to my replaceText(TheText, "{{SJ}}", my textOrEmpty(PARAM_YEAR))
-	set TheText to my replaceText(TheText, "{{HJ}}", my textOrEmpty(PARAM_SEMESTER))
-	set TheText to my replaceText(TheText, "{{HJBez}}", my textOrEmpty(PARAM_SEMESTER_NAME))
-	set TheText to my replaceText(TheText, "{{Name}}", my textOrEmpty(PARAM_NAME))
-	return TheText
-end replacePlaceholders
-
--- Funktion, um missing value zu einem leeren String zu machen (sonst string-Konvertierung/Verkettung)
-on textOrEmpty(TheValue)
-	if TheValue is missing value then
-		return ""
-	else
-		return TheValue as string
-	end if
-end textOrEmpty
